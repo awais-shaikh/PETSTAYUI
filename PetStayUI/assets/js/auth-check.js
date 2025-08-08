@@ -13,13 +13,13 @@
   // Define Amplify Auth configuration using placeholders
   const amplifyAuthConfig = {
   region: 'us-east-2', // Example: 'us-east-1'
-  userPoolId: 'us-east-2_ObgxzZiq8', //write your Cognito User Pool ID here
-  userPoolWebClientId: '3hkn733rjk2g1fkpmnmv3382ej', //write your Cognito User Pool Client ID here
+  userPoolId: 'us-east-2_yJEzY4ffU', //write your Cognito User Pool ID here
+  userPoolWebClientId: '2qq961ihmelp8sqvf4j913tt35', //write your Cognito User Pool Client ID here
   oauth: {
-    domain: 'us-east-2obgxzziq8.auth.us-east-2.amazoncognito.com', //write your Cognito Domain here
+    domain: 'us-east-2yjezy4ffu.auth.us-east-2.amazoncognito.com', //write your Cognito Domain here
     scope: ['email', 'openid', 'phone'], // OAuth scopes
-    redirectSignIn: 'https://main.d2qk7y64cxtqr2.amplifyapp.com/admin-frontend/post-login.html', //write your Redirect Sign In URL here
-    redirectSignOut: 'https://main.d2qk7y64cxtqr2.amplifyapp.com/index.html', //write your Redirect Sign Out URL here
+    redirectSignIn: 'https://main.d3se10ik2qynbc.amplifyapp.com/admin-frontend/post-login.html', //write your Redirect Sign In URL here
+    redirectSignOut: 'https://main.d3se10ik2qynbc.amplifyapp.com/index.html', //write your Redirect Sign Out URL here
     responseType: 'code', // OAuth flow to use (code for authorization code grant)
   }
 };

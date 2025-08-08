@@ -1,0 +1,49 @@
+{
+  "Comment": "PetStay Booking State Machine — orchestrates booking creation and emits EventBridge BookingCreated event.",
+  "StartAt": "InvokeCreateBooking",
+  "States": {
+    "InvokeCreateBooking": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::lambda:invoke",
+      "Parameters": {
+        "FunctionName": "arn:aws:lambda:us-east-1:664418950974:function:CreateBookingFunction",
+        "Payload.$": "$"
+      },
+      "Next": "ParseBody"
+    },
+    "ParseBody": {
+      "Type": "Pass",
+      "Parameters": {
+        "Parsed.$": "States.StringToJson($.Payload.body)"
+      },
+      "Next": "EmitBookingCreatedEvent"
+    },
+    "EmitBookingCreatedEvent": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::aws-sdk:eventbridge:putEvents",
+      "Parameters": {
+        "Entries": [
+          {
+            "Source": "PetStay.Booking",
+            "DetailType": "BookingCreated",
+            "Detail": {
+              "BookingID.$": "$.Parsed.BookingID",
+              "OwnerName.$": "$.Parsed.OwnerName"
+            },
+            "EventBusName": "PetStayBus"
+          }
+        ]
+      },
+      "ResultPath": "$.EmitResult",
+      "Next": "WrapOutput"
+    },
+    "WrapOutput": {
+      "Type": "Pass",
+      "Parameters": {
+        "BookingID.$": "$.Parsed.BookingID",
+        "OwnerName.$": "$.Parsed.OwnerName"
+      },
+      "End": true
+    }
+  }
+}

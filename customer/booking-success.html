@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booking Successful | PetStay</title>
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link rel="stylesheet" href="../assets/css/customer.css" />
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="/assets/js/config.js"></script>
+</head>
+
+<body>
+  <div class="confirmation-wrapper">
+    <main class="main-wrapper">
+      <section class="booking-success-section">
+        <div class="container text-center pt-5">
+          <h2 class="fw-bold mb-2">Booking Confirmed!</h2>
+          <p class="text-muted">Thank you for choosing PetStay. Use the QR code below for check-in.</p>
+
+          <div class="qr-card mx-auto mt-4">
+            <h5 class="fw-semibold mb-3">Your Check-In QR Code</h5>
+            <div id="qrcode" class="qr-code-wrapper"></div>
+
+            <button id="downloadQR" class="btn btn-primary w-100 mt-3">Download QR Code</button>
+            <button onclick="window.print()" class="btn btn-outline-secondary mt-2 w-100">Print This Page</button>
+
+            <p class="small text-muted mt-3">Please present this QR code at the reception during check-in.</p>
+            <div id="toast-msg" class="alert alert-success mt-3 d-none" role="alert">QR Code Downloaded</div>
+          </div>
+
+          <div id="bookingStatusMessage" class="alert mt-4 d-none text-start" role="alert"></div>
+
+          <a href="new-booking.html" class="btn btn-secondary mt-4">Make Another Booking</a>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+<script>
+  // When page loads: check URL for bookingId, else try sessionStorage fallback
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Get bookingId from URL query or session storage fallback
+    const params = new URLSearchParams(window.location.search);
+    const bookingIdFromURL = params.get('bookingId');
+    const bookingId = sessionStorage.getItem('BookingID') || bookingIdFromURL;
+    const ownerNameStored = sessionStorage.getItem('OwnerName');
+
+    // Grab DOM elements
+    const title = document.querySelector('h2.fw-bold.mb-2');
+    const qrWrapper = document.getElementById('qrcode');
+    const statusBox = document.getElementById('bookingStatusMessage');
+
+    // Hide QR section initially
+    document.querySelector('.qr-card').style.display = 'none';
+
+    // No booking ID found → show error
+    if (!bookingId) {
+      qrWrapper.innerHTML = "<p class='text-danger'>Booking ID not found. Please try again.</p>";
+      return;
+    }
+
+    try {
+      // Fetch booking using your dynamic API URL from config
+      const res = await fetch(`${window.PETSTAY_CONFIG.BOOKINGS_API_URL}/${bookingId}`);
+      const data = await res.json();
+
+      if (!data || !data.BookingID) {
+        qrWrapper.innerHTML = "<p class='text-danger'>Booking not found.</p>";
+        return;
+      }
+
+      // Format name nicely if present
+      const ownerName = ownerNameStored || data.OwnerName;
+      const capName = ownerName ? ownerName.charAt(0).toUpperCase() + ownerName.slice(1) : '';
+
+      // Update main heading
+      title.innerText = `Thank you${capName ? ', ' + capName : ''}!`;
+
+      // Show Booking ID
+      const bookingIdText = document.createElement('p');
+      bookingIdText.className = 'mt-3 fw-semibold';
+      bookingIdText.innerText = `Your Booking ID: ${bookingId}`;
+      bookingIdText.style.textAlign = 'center';
+      qrWrapper.appendChild(bookingIdText);
+
+      // Determine status message
+      let statusMsg = '';
+      let alertClass = 'alert-info';
+
+      switch (data.Status) {
+        case 'Pending':
+          statusMsg = 'Booking received! Please wait for admin confirmation. You’ll get an email once confirmed.';
+          alertClass = 'alert-warning';
+          break;
+        case 'Confirmed':
+          statusMsg = 'Booking confirmed! Please bring your QR code for check-in.';
+          alertClass = 'alert-success';
+          break;
+        case 'Checked-In':
+          statusMsg = 'You are already checked in. Enjoy your pet’s stay!';
+          alertClass = 'alert-success';
+          break;
+        case 'Cancelled':
+          statusMsg = 'Your booking was cancelled. Please contact support.';
+          alertClass = 'alert-danger';
+          break;
+        default:
+          statusMsg = `Booking status: ${data.Status}`;
+          alertClass = 'alert-secondary';
+      }
+
+      // If booking is Confirmed or Checked-In → show QR
+      if (["Confirmed", "Checked-In"].includes(data.Status) && data.QRCodeURL) {
+        document.querySelector('.qr-card').style.display = 'block';
+
+        const img = document.createElement('img');
+        img.src = data.QRCodeURL; // Pre-signed S3 URL
+        img.alt = "QR Code";
+        img.style.width = '200px';
+        img.style.height = '200px';
+        img.style.display = 'block';
+        img.style.margin = '20px auto';
+
+        qrWrapper.appendChild(img);
+
+        // Fun confetti effect 
+        confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+
+        //Download QR code button
+        document.getElementById('downloadQR').addEventListener('click', () => {
+          const link = document.createElement('a');
+          link.href = img.src;
+          link.download = `PetStay-Booking-${bookingId}.png`;
+          link.click();
+
+          const toast = document.getElementById('toast-msg');
+          toast.classList.remove('d-none');
+          setTimeout(() => toast.classList.add('d-none'), 3000);
+        });
+
+      } else if (["Confirmed", "Checked-In"].includes(data.Status)) {
+        // If status is good but QR missing
+        qrWrapper.innerHTML += "<p class='text-danger'>QR code not found. Please check your confirmation email or contact support.</p>";
+      }
+
+      // Show status alert
+      statusBox.textContent = statusMsg;
+      statusBox.className = `alert ${alertClass} mt-4`;
+      statusBox.classList.remove('d-none');
+
+      // Clear session for safety
+      sessionStorage.clear();
+    } catch (err) {
+      qrWrapper.innerHTML = "<p class='text-danger'>Error loading booking. Please try again later.</p>";
+      console.error('Fetch error:', err);
+    }
+  });
+</script>
+
+</body>
+</html>

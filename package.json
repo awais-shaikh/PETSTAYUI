@@ -1,0 +1,29 @@
+{
+  "name": "plainadmin",
+  "version": "2.0.0",
+  "description": "",
+  "homepage": "https://github.com/PlainAdmin/plainadmin#readme",
+  "bugs": {
+    "url": "https://github.com/PlainAdmin/plainadmin/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PlainAdmin/plainadmin.git"
+  },
+  "license": "MIT",
+  "author": "plainadmin team",
+  "type": "commonjs",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "devDependencies": {
+    "browser-sync": "^3.0.4",
+    "gulp": "^5.0.0",
+    "gulp-autoprefixer": "^9.0.0",
+    "gulp-clean-css": "^4.3.0",
+    "gulp-minify": "^3.0.0",
+    "gulp-sass": "^5.1.0",
+    "sass": "^1.63.6"
+  }
+}

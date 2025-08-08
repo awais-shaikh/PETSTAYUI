@@ -1,0 +1,302 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "PetHostelBookingAPI",
+    "version" : "2025-07-28 02:08:46UTC"
+  },
+  "servers" : [ {
+    "url" : "https://24q261zi50.execute-api.us-east-1.amazonaws.com/{basePath}",
+    "variables" : {
+      "basePath" : {
+        "default" : ""
+      }
+    }
+  } ],
+  "paths" : {
+    "/booking/{bookingId}" : {
+      "get" : {
+        "responses" : {
+          "default" : {
+            "description" : "Default response for GET /booking/{bookingId}"
+          }
+        },
+        "x-amazon-apigateway-integration" : {
+          "payloadFormatVersion" : "2.0",
+          "type" : "aws_proxy",
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:664418950974:function:AdminDashboardHandler/invocations",
+          "connectionType" : "INTERNET"
+        }
+      },
+      "parameters" : [ {
+        "name" : "bookingId",
+        "in" : "path",
+        "description" : "Generated path parameter for bookingId",
+        "required" : true,
+        "schema" : {
+          "type" : "string"
+        }
+      } ]
+    },
+    "/bookingStatus/{executionArn}" : {
+      "get" : {
+        "responses" : {
+          "default" : {
+            "description" : "Default response for GET /bookingStatus/{executionArn}"
+          }
+        },
+        "x-amazon-apigateway-integration" : {
+          "payloadFormatVersion" : "2.0",
+          "type" : "aws_proxy",
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:664418950974:function:BookingStatusHandler/invocations",
+          "connectionType" : "INTERNET"
+        }
+      },
+      "parameters" : [ {
+        "name" : "executionArn",
+        "in" : "path",
+        "description" : "Generated path parameter for executionArn",
+        "required" : true,
+        "schema" : {
+          "type" : "string"
+        }
+      } ]
+    },
+    "/bookings" : {
+      "get" : {
+        "responses" : {
+          "default" : {
+            "description" : "Default response for GET /bookings"
+          }
+        },
+        "x-amazon-apigateway-integration" : {
+          "payloadFormatVersion" : "2.0",
+          "type" : "aws_proxy",
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:664418950974:function:AdminDashboardHandler/invocations",
+          "connectionType" : "INTERNET"
+        }
+      }
+    },
+    "/get-booking-trend" : {
+      "get" : {
+        "responses" : {
+          "default" : {
+            "description" : "Default response for GET /get-booking-trend"
+          }
+        },
+        "x-amazon-apigateway-integration" : {
+          "payloadFormatVersion" : "2.0",
+          "type" : "aws_proxy",
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:664418950974:function:AdminDashboardHandler/invocations",
+          "connectionType" : "INTERNET"
+        }
+      }
+    },
+    "/rooms/availability" : {
+      "get" : {
+        "responses" : {
+          "default" : {
+            "description" : "Default response for GET /rooms/availability"
+          }
+        },
+        "x-amazon-apigateway-integration" : {
+          "payloadFormatVersion" : "2.0",
+          "type" : "aws_proxy",
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:664418950974:function:AdminDashboardHandler/invocations",
+          "connectionType" : "INTERNET"
+        }
+      }
+    },
+    "/cancel" : {
+      "post" : {
+        "responses" : {
+          "default" : {
+            "description" : "Default response for POST /cancel"
+          }
+        },
+        "security" : [ {
+          "PetStayCognitoAuth" : [ ]
+        } ],
+        "x-amazon-apigateway-integration" : {
+          "payloadFormatVersion" : "2.0",
+          "type" : "aws_proxy",
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:664418950974:function:AdminDashboardHandler/invocations",
+          "connectionType" : "INTERNET"
+        }
+      }
+    },
+    "/checkin" : {
+      "post" : {
+        "responses" : {
+          "default" : {
+            "description" : "Default response for POST /checkin"
+          }
+        },
+        "security" : [ {
+          "PetStayCognitoAuth" : [ ]
+        } ],
+        "x-amazon-apigateway-integration" : {
+          "payloadFormatVersion" : "2.0",
+          "type" : "aws_proxy",
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:664418950974:function:AdminDashboardHandler/invocations",
+          "connectionType" : "INTERNET"
+        }
+      }
+    },
+    "/checkout" : {
+      "post" : {
+        "responses" : {
+          "default" : {
+            "description" : "Default response for POST /checkout"
+          }
+        },
+        "security" : [ {
+          "PetStayCognitoAuth" : [ ]
+        } ],
+        "x-amazon-apigateway-integration" : {
+          "payloadFormatVersion" : "2.0",
+          "type" : "aws_proxy",
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:664418950974:function:AdminDashboardHandler/invocations",
+          "connectionType" : "INTERNET"
+        }
+      }
+    },
+    "/confirm" : {
+      "post" : {
+        "responses" : {
+          "default" : {
+            "description" : "Default response for POST /confirm"
+          }
+        },
+        "security" : [ {
+          "PetStayCognitoAuth" : [ ]
+        } ],
+        "x-amazon-apigateway-integration" : {
+          "payloadFormatVersion" : "2.0",
+          "type" : "aws_proxy",
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:664418950974:function:AdminDashboardHandler/invocations",
+          "connectionType" : "INTERNET"
+        }
+      }
+    },
+    "/newbooking" : {
+      "post" : {
+        "responses" : {
+          "default" : {
+            "description" : "Default response for POST /newbooking"
+          }
+        },
+        "x-amazon-apigateway-integration" : {
+          "integrationSubtype" : "StepFunctions-StartExecution",
+          "responseParameters" : {
+            "200" : {
+              "overwrite:header.Content-Type" : "application/json",
+              "overwrite:statuscode" : "200"
+            }
+          },
+          "credentials" : "arn:aws:iam::664418950974:role/PetStayAPIGatewayRole",
+          "requestParameters" : {
+            "Input" : "$request.body",
+            "StateMachineArn" : "arn:aws:states:us-east-1:664418950974:stateMachine:PetStayBookingStateMachine",
+            "Name" : "$context.requestId"
+          },
+          "payloadFormatVersion" : "1.0",
+          "type" : "aws_proxy",
+          "connectionType" : "INTERNET"
+        }
+      }
+    },
+    "/restore" : {
+      "post" : {
+        "responses" : {
+          "default" : {
+            "description" : "Default response for POST /restore"
+          }
+        },
+        "security" : [ {
+          "PetStayCognitoAuth" : [ ]
+        } ],
+        "x-amazon-apigateway-integration" : {
+          "payloadFormatVersion" : "2.0",
+          "type" : "aws_proxy",
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:664418950974:function:AdminDashboardHandler/invocations",
+          "connectionType" : "INTERNET"
+        }
+      }
+    },
+    "/rooms/seed" : {
+      "post" : {
+        "responses" : {
+          "default" : {
+            "description" : "Default response for POST /rooms/seed"
+          }
+        },
+        "x-amazon-apigateway-integration" : {
+          "payloadFormatVersion" : "2.0",
+          "type" : "aws_proxy",
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:664418950974:function:AdminDashboardHandler/invocations",
+          "connectionType" : "INTERNET"
+        }
+      }
+    },
+    "/upload-url" : {
+      "post" : {
+        "responses" : {
+          "default" : {
+            "description" : "Default response for POST /upload-url"
+          }
+        },
+        "x-amazon-apigateway-integration" : {
+          "payloadFormatVersion" : "2.0",
+          "type" : "aws_proxy",
+          "httpMethod" : "POST",
+          "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:664418950974:function:GeneratePetPhotoUploadUrl/invocations",
+          "connectionType" : "INTERNET"
+        }
+      }
+    }
+  },
+  "components" : {
+    "securitySchemes" : {
+      "PetStayCognitoAuth" : {
+        "type" : "oauth2",
+        "flows" : { },
+        "x-amazon-apigateway-authorizer" : {
+          "identitySource" : "$request.header.Authorization",
+          "jwtConfiguration" : {
+            "audience" : [ "7pk31b8a5ak2b7aj42qimaibhc" ],
+            "issuer" : "https://cognito-idp.us-east-1.amazonaws.com/us-east-1_QIxGKKFzG"
+          },
+          "type" : "jwt"
+        }
+      }
+    },
+    "x-amazon-apigateway-integrations" : {
+      "unusedIntegration_3v7ju9f" : {
+        "payloadFormatVersion" : "2.0",
+        "type" : "aws_proxy",
+        "httpMethod" : "POST",
+        "uri" : "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/arn:aws:lambda:us-east-1:664418950974:function:CreateBookingFunction/invocations",
+        "connectionType" : "INTERNET"
+      }
+    }
+  },
+  "x-amazon-apigateway-cors" : {
+    "allowMethods" : [ "GET", "OPTIONS", "POST" ],
+    "allowHeaders" : [ "authorization", "content-type" ],
+    "maxAge" : 0,
+    "allowCredentials" : true,
+    "allowOrigins" : [ "https://main.d3esln33qx1ws1.amplifyapp.com" ]
+  },
+  "x-amazon-apigateway-importexport-version" : "1.0"
+}

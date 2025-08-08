@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Booking Successful | PetStay</title>
+  <link rel="stylesheet" href="../assets/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="../assets/css/main.css" />
+  <link rel="stylesheet" href="../assets/css/customer.css" />
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="/assets/js/config.js"></script>
+</head>
+
+<body>
+  <div class="confirmation-wrapper">
+    <main class="main-wrapper">
+      <section class="booking-success-section">
+
+        <div class="container text-center pt-5">
+          <h2 id="confirmationTitle" class="fw-bold mb-2">Thank you!</h2>
+          <p id="confirmationSubtitle" class="text-muted"></p>
+
+          <!-- Pet Photo (conditionally shown) -->
+          <div id="petPhotoContainer" class="mt-4" style="display: none;">
+            <h5 class="fw-semibold mb-3">Your Pet's Photo</h5>
+            <img id="petPhoto" alt="Pet Photo" class="img-fluid rounded shadow" style="max-width: 250px;" />
+          </div>
+
+          <!-- QR Code Section -->
+          <div class="qr-card mx-auto mt-4" style="display: none;">
+            <h5 class="fw-semibold mb-3">Your Check-In QR Code</h5>
+            <div id="qrcode" class="qr-code-wrapper"></div>
+
+            <button id="downloadQR" class="btn btn-primary w-100 mt-3" disabled>Download QR Code</button>
+            <button onclick="window.print()" class="btn btn-outline-secondary mt-2 w-100">Print This Page</button>
+
+            <p class="small text-muted mt-3">Please present this QR code at the reception during check-in.</p>
+            <div id="toast-msg" class="alert alert-success mt-3 d-none" role="alert">QR Code Downloaded</div>
+          </div>
+
+          <div id="bookingStatusMessage" class="alert mt-4 d-none text-start" role="alert"></div>
+
+          <a href="new-booking.html" class="btn btn-secondary mt-4">Make Another Booking</a>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <script src="../assets/js/bootstrap.bundle.min.js"></script>
+  <script src="../assets/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const params = new URLSearchParams(window.location.search);
+      const bookingIdFromURL = params.get('bookingId');
+      const bookingId = sessionStorage.getItem('BookingID') || bookingIdFromURL;
+      const ownerNameStored = sessionStorage.getItem('OwnerName');
+
+      const title = document.getElementById('confirmationTitle');
+      const subtitle = document.getElementById('confirmationSubtitle');
+      const qrWrapper = document.getElementById('qrcode');
+      const statusBox = document.getElementById('bookingStatusMessage');
+      const downloadBtn = document.getElementById('downloadQR');
+      const toast = document.getElementById('toast-msg');
+
+      document.querySelector('.qr-card').style.display = 'none';
+
+      if (!bookingId) {
+        qrWrapper.innerHTML = "<p class='text-danger'>Booking ID not found. Please try again.</p>";
+        return;
+      }
+
+      try {
+        const res = await fetch(`${window.PETSTAY_CONFIG.BOOKING_API_URL}/${bookingId}`);
+        const contentType = res.headers.get("content-type");
+
+        if (!res.ok) {
+          const errorText = await res.text();
+          qrWrapper.innerHTML = `<p class='text-danger'>Error loading booking (${res.status}): ${errorText}</p>`;
+          console.error("Booking fetch failed:", errorText);
+          return;
+        }
+
+        if (!contentType || !contentType.includes("application/json")) {
+          const errorText = await res.text();
+          qrWrapper.innerHTML = `<p class='text-danger'>Unexpected response format.</p>`;
+          console.error("Non-JSON response:", errorText);
+          return;
+        }
+
+        const data = await res.json();
+        // Show pet photo if available
+        if (data.PetPhotoKey) {
+          const photoContainer = document.getElementById("petPhotoContainer");
+          const photoElement = document.getElementById("petPhoto");
+
+          const photoURL = `${window.PETSTAY_CONFIG.PET_PHOTO_PUBLIC_URL_BASE}/${data.PetPhotoKey}`;
+          photoElement.src = photoURL;
+          photoContainer.style.display = "block";
+        }
+
+        if (!data || !data.BookingID) {
+          qrWrapper.innerHTML = "<p class='text-danger'>Booking not found.</p>";
+          return;
+        }
+
+        const ownerName = ownerNameStored || data.OwnerName || "";
+        const capName = ownerName ? ownerName.charAt(0).toUpperCase() + ownerName.slice(1) : "";
+        title.innerText = `Thank you${capName ? ', ' + capName : ''}!`;
+
+        let statusMsg = '';
+        let alertClass = 'alert-info';
+
+        switch (data.Status) {
+          case 'Pending':
+            subtitle.innerText = 'Your booking was received. Please wait for admin confirmation.';
+            statusMsg = 'Booking received! Please wait for admin confirmation. You’ll get an email once confirmed.';
+            alertClass = 'alert-warning';
+            break;
+          case 'Confirmed':
+            subtitle.innerText = 'Use the QR code below to check in.';
+            statusMsg = 'Booking confirmed! Please bring your QR code for check-in.';
+            alertClass = 'alert-success';
+            break;
+          case 'Checked-In':
+            subtitle.innerText = 'Welcome back! You are already checked in.';
+            statusMsg = 'You are already checked in. Enjoy your pet’s stay!';
+            alertClass = 'alert-success';
+            break;
+          case 'Cancelled':
+            subtitle.innerText = 'This booking has been cancelled.';
+            statusMsg = 'Your booking was cancelled. Please contact support.';
+            alertClass = 'alert-danger';
+            break;
+          default:
+            subtitle.innerText = `Booking status: ${data.Status}`;
+            statusMsg = `Booking status: ${data.Status}`;
+            alertClass = 'alert-secondary';
+        }
+
+        // Show QR if allowed
+        if (["Confirmed", "Checked-In"].includes(data.Status) && data.QRCodeURL) {
+          document.querySelector('.qr-card').style.display = 'block';
+
+          const img = document.createElement('img');
+          img.src = data.QRCodeURL;
+          img.alt = "QR Code";
+          img.style.width = '200px';
+          img.style.height = '200px';
+          img.style.display = 'block';
+          img.style.margin = '20px auto';
+          qrWrapper.appendChild(img);
+
+          if (downloadBtn) {
+            downloadBtn.disabled = false;
+            downloadBtn.addEventListener('click', () => {
+              const link = document.createElement('a');
+              link.href = img.src;
+              link.download = `PetStay-Booking-${bookingId}.png`;
+              link.click();
+
+              if (toast) {
+                toast.classList.remove('d-none');
+                setTimeout(() => toast.classList.add('d-none'), 3000);
+              }
+            });
+          }
+
+          if (typeof confetti === "function") {
+            confetti({ particleCount: 80, spread: 70, origin: { y: 0.6 } });
+          }
+
+        } else if (["Confirmed", "Checked-In"].includes(data.Status)) {
+          qrWrapper.innerHTML += "<p class='text-danger'>QR code not found. Please check your confirmation email or contact support.</p>";
+          console.warn(`Missing QR for confirmed booking: ${bookingId}`);
+        }
+
+        // Show status message
+        statusBox.textContent = statusMsg;
+        statusBox.className = `alert ${alertClass} mt-4`;
+        statusBox.classList.remove('d-none');
+
+      } catch (err) {
+        qrWrapper.innerHTML = "<p class='text-danger'>Error loading booking. Please try again later.</p>";
+        console.error('Fetch error:', err);
+      } finally {
+        sessionStorage.clear();
+      }
+    });
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="/assets/images/favicon.svg" type="image/x-icon" />
+  <title>PetStay Admin Panel</title>
+
+  <!-- ========== All CSS files linkup ========= -->
+  <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/assets/css/lineicons.css" rel="stylesheet" type="text/css" />
+  <link rel="stylesheet" href="/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
+  <!-- <link rel="stylesheet" href="/assets/css/fullcalendar.css" /> -->
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <script src="/assets/js/Chart.min.js"></script>
+  <script src="/assets/js/config.js"></script>
+
+</head>
+<body>
+  <!-- ======== sidebar-nav start =========== -->
+  <aside class="sidebar-nav-wrapper">
+    <div class="navbar-logo">
+      <a href="/admin-frontend/admin_dashboard.html">
+
+        <img src="/assets/images/logo/ASnT5o01.svg" alt="PetHostelFlow" />
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li class="nav-item">
+          <a href="/admin-frontend/admin_dashboard.html">
+
+            <span class="icon">
+              <i class="lni lni-dashboard"></i>
+            </span>
+            <span class="text">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/admin-frontend/manage_bookings.html">
+            <span class="icon">
+              <i class="lni lni-calendar"></i>
+            </span>
+            <span class="text">Bookings</span>
+          </a>
+        </li>
+
+
+
+      </ul>
+    </nav>
+  </aside>
+  <!-- ======== sidebar-nav end =========== -->
+
+
+  <div class="overlay"></div>
+  <!-- ======== sidebar-nav end =========== -->
+
+  <!-- ======== main-wrapper start =========== -->
+  <main class="main-wrapper">
+    <!-- ========== header start ========== -->
+    <header class="header">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-5 col-md-5 col-6">
+            <div class="header-left d-flex align-items-center">
+              <div class="menu-toggle-btn mr-15">
+                <button id="menu-toggle" class="main-btn primary-btn btn-hover">
+                  <i class="lni lni-chevron-left me-2"></i> Menu
+                </button>
+              </div>
+              <!-- <div class="header-search d-none d-md-flex">
+                <form action="#">
+                  <input type="text" placeholder="Search..." />
+                  <button><i class="lni lni-search-alt"></i></button>
+                </form>
+              </div> -->
+            </div>
+          </div>
+          <div class="col-lg-7 col-md-7 col-6">
+            <div class="header-right">
+              <div class="profile-box ml-15">
+                <button class="dropdown-toggle bg-transparent border-0" type="button" id="profile"
+                  data-bs-toggle="dropdown" aria-expanded="false">
+                  <div class="profile-info">
+                    <div class="info d-flex align-items-center">
+                      <div class="image">
+                        <img src="/assets/images/profile/profile-image.png" alt="Profile image" />
+                      </div>
+                      <div>
+                        <!-- Email inserted here by JS -->
+                        <h6 class="fw-500 mb-0" id="adminEmail">
+                          <span class="spinner-border spinner-border-sm" role="status"></span>
+                          Loading...
+                        </h6>
+                        <p class="mb-0">Admin</p> <!-- Fixed Role Label -->
+                      </div>
+                    </div>
+                  </div>
+                </button>
+
+                <!-- Dropdown -->
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profile">
+                  <li>
+                    <div class="author-info d-flex align-items-center p-2">
+                      <div class="image">
+                        <img src="/assets/images/profile/profile-image.png" alt="Dropdown image">
+                      </div>
+                      <div class="content ms-2">
+                        <h4 class="text-sm mb-1">Admin</h4> <!-- Still fixed -->
+                        <!-- Email dynamically set here -->
+                        <a id="adminEmailDropdown" class="text-muted text-xs" href="#">Loading...</a>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <a href="javascript:void(0);" id="signOutBtn" class="dropdown-item">
+                      <i class="lni lni-exit me-1"></i> Sign Out
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- ========== header end ========== -->
+
+    <!-- ========== section start ========== -->
+    <section class="section">
+      <div class="container-fluid">
+        <!-- Title -->
+        <div class="title-wrapper pt-30">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <div class="title">
+                <h2>PetStay Dashboard</h2>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="breadcrumb-wrapper d-flex justify-content-between align-items-center flex-wrap">
+                <nav aria-label="breadcrumb" class="mb-0">
+                  <ol class="breadcrumb mb-0">
+                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">PetStay</li>
+                  </ol>
+                </nav>
+                <button id="refreshBtn" class="btn btn-outline-primary btn-sm ms-3 mt-2 mt-md-0">
+                  <i class="lni lni-reload me-1"></i> Refresh
+                </button>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="row">
+          <div class="col-xl-3 col-lg-4 col-sm-6">
+            <div class="icon-card mb-30">
+              <div class="icon purple"><i class="lni lni-cart-full"></i></div>
+              <div class="content">
+                <h6 class="mb-10">Current Guests</h6>
+                <h3 class="text-bold mb-10" id="currentGuests">Loading...</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-4 col-sm-6">
+            <div class="icon-card mb-30">
+              <div class="icon success"><i class="lni lni-dollar"></i></div>
+              <div class="content">
+                <h6 class="mb-10">Booking Today</h6>
+                <h3 class="text-bold mb-10" id="bookingsToday">Loading...</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-4 col-sm-6">
+            <div class="icon-card mb-30">
+              <div class="icon primary"><i class="lni lni-credit-cards"></i></div>
+              <div class="content">
+                <h6 class="mb-10">Available Rooms</h6>
+                <div id="availableRooms">
+                  <p class="text-sm mb-1 text-success"><strong>Dog:</strong> <span id="dogRooms">—</span></p>
+                  <p class="text-sm text-danger"><strong>Cat:</strong> <span id="catRooms">—</span></p>
+
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div class="col-xl-3 col-lg-4 col-sm-6">
+            <div class="icon-card mb-30">
+              <div class="icon orange"><i class="lni lni-user"></i></div>
+              <div class="content">
+                <h6 class="mb-10" id="newBookings">Total Bookings</h6>
+                <h3 class="text-bold mb-10" id="newBookingsCount">Loading...</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Guests Table -->
+        <div class="col-lg-12">
+          <div class="card-style mb-30">
+            <div class="title d-flex flex-wrap justify-content-between align-items-center">
+              <div class="left">
+                <h6 class="text-medium mb-30">Current Guests</h6>
+              </div>
+              <div class="right">
+                <div class="select-style-1">
+                  <div class="select-position select-sm">
+                    <select class="light-bg">
+                      <option value="">Today</option>
+                      <option value="">Weekly</option>
+                      <option value="">Monthly</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="table top-selling-table">
+                <thead>
+                  <tr>
+                    <th>
+                      <h6 class="text-sm text-medium">Pet Name</h6>
+                    </th>
+                    <th class="min-width">
+                      <h6 class="text-sm text-medium">QR Code</h6>
+                    </th>
+                    <th class="min-width">
+                      <h6 class="text-sm text-medium">Owner</h6>
+                    </th>
+                    <th class="min-width">
+                      <h6 class="text-sm text-medium">Room No.</h6>
+                    </th>
+                    <th class="min-width">
+                      <h6 class="text-sm text-medium">Date In</h6>
+                    </th>
+                    <th class="min-width">
+                      <h6 class="text-sm text-medium">Days Left</h6>
+                    </th>
+                    <th class="min-width">
+                      <h6 class="text-sm text-medium">Status</h6>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody id="currentGuestsTable">
+                  <!-- Dynamic content loaded via JS -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="card-style mb-30">
+              <div class="title d-flex flex-wrap align-items-center justify-content-between">
+                <div class="left">
+                  <h6 class="text-medium mb-2">Booking Status</h6>
+                </div>
+                <div class="right">
+                  <div class="select-style-1 mb-2">
+                    <div class="select-position select-sm">
+                      <select class="bg-ligh">
+                        <option value="">Last 6 Months</option>
+                        <option value="">Last 3 Months</option>
+                        <option value="">Last Year</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="chart">
+                <canvas id="BookingStatusPieChart" style="width: 100%; height: 400px;"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card-style mb-30">
+              <div class="title d-flex flex-wrap align-items-center justify-content-between">
+                <div class="left">
+                  <h6 class="text-medium mb-2">Pet Species Stats</h6>
+                </div>
+                <div class="right">
+                  <div class="select-style-1 mb-2">
+                    <div class="select-position select-sm">
+                      <select class="bg-ligh">
+                        <option value="">Last 6 Months</option>
+                        <option value="">Last 3 Months</option>
+                        <option value="">Last Year</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="chart">
+                <div id="legend4" class="mb-20">
+                  <ul class="legend3 d-flex flex-wrap gap-3 align-items-center">
+                    <li>
+                      <div class="d-flex">
+                        <span class="bg-color primary-bg"> </span>
+                        <div class="text">
+                          <p class="text-sm text-success"><span class="text-dark">Dogs</span></p>
+                          <h2 id="dogCount">—</h2>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="d-flex">
+                        <span class="bg-color danger-bg"></span>
+                        <div class="text">
+                          <p class="text-sm text-danger"><span class="text-dark">Cats</span></p>
+                          <h2 id="catCount">—</h2>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <canvas id="PetSpeciesChart" style="width: 100%; height: 400px;"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Toast Notification for Room Availability -->
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+      <div id="availabilityToast" class="toast text-white bg-danger border-0" role="alert" aria-live="polite"
+        aria-atomic="true">
+        <div class="d-flex">
+          <div class="toast-body" id="availabilityMessage"></div>
+          <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ========== section end ========== -->
+
+    <!-- ========== footer start =========== -->
+    <footer class="footer">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-6 order-last order-md-first">
+            <div class="copyright text-center text-md-start">
+              <p class="text-sm">
+                Designed and Developed by AWSome Squad - FRONTEND TEAM
+
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </main>
+  <!-- ======== main-wrapper end =========== -->
+  <!-- ========= All Javascript files linkup ======== -->
+  <script defer src="/assets/js/bootstrap.bundle.min.js"></script>
+  <script defer src="/assets/js/moment.min.js"></script>
+  <script defer src="/assets/js/jvectormap.min.js"></script>
+  <script defer src="/assets/js/main.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/aws-amplify@latest/dist/aws-amplify.min.js"></script>
+  <script defer src="/assets/js/auth-check.js"></script>
+  
+<script>
+  /**
+   * Load all booking data and show stats + table.
+   * Shows QR code images using pre-signed S3 URLs for security.
+   */
+  async function loadDashboardData(filter = "Today") {
+    try {
+      // Fetch all bookings from your global config API URL
+      const res = await fetch(window.PETSTAY_CONFIG.BOOKINGS_API_URL);
+      const result = await res.json();
+      const bookings = result.bookings;
+
+      //Get today's date in YYYY-MM-DD format.
+      const today = new Date();
+      let todayISO = today.toISOString().split("T")[0];
+
+      // Filter bookings by time range
+      let filteredBookings = bookings;
+      if (filter === "Today") {
+        filteredBookings = bookings.filter(b => b.CheckInDate === todayISO);
+      } else if (filter === "Weekly") {
+        const weekAgo = new Date();
+        weekAgo.setDate(today.getDate() - 7);
+        filteredBookings = bookings.filter(b => new Date(b.CheckInDate) >= weekAgo);
+      } else if (filter === "Monthly") {
+        const monthAgo = new Date();
+        monthAgo.setDate(today.getDate() - 30);
+        filteredBookings = bookings.filter(b => new Date(b.CheckInDate) >= monthAgo);
+      }
+
+      // Count Checked-In bookings
+      const checkedIn = bookings.filter(b => b.Status === "Checked-In");
+
+      // Update dashboard stats
+      document.getElementById("currentGuests").innerText = checkedIn.length;
+      document.getElementById("bookingsToday").innerText = filteredBookings.length;
+      document.getElementById("newBookingsCount").innerText = bookings.length;
+
+      // Clear previous table
+      const guestTable = document.getElementById("currentGuestsTable");
+      guestTable.innerHTML = "";
+
+      // Counters for charts
+      const petSpeciesCount = { Dog: 0, Cat: 0 };
+      const statusCount = { "Pending": 0, "Confirmed": 0, "Checked-In": 0, "Checked-Out": 0, "Cancelled": 0 };
+
+      bookings.forEach(b => {
+        const species = b.PetSpecies?.trim();
+        if (petSpeciesCount.hasOwnProperty(species)) petSpeciesCount[species]++;
+        if (statusCount.hasOwnProperty(b.Status)) statusCount[b.Status]++;
+
+        if (b.Status === "Checked-In") {
+          const daysLeft = Math.max(0, Math.ceil(
+            (new Date(b.CheckOutDate) - new Date()) / (1000 * 60 * 60 * 24)
+          ));
+
+          guestTable.innerHTML += `
+            <tr>
+              <td>
+                <div class="product d-flex align-items-center gap-2">
+                  <div class="image">
+                    <img src="/assets/images/pets/${species?.toLowerCase() || 'default'}.jpg" alt="${b.PetName}" />
+                  </div>
+                  <div>
+                    <p class="text-sm fw-bold mb-0">${b.PetName}</p>
+                    <p class="text-xs text-muted mb-0">(${b.PetBreed || b.PetSpecies})</p>
+                  </div>
+                </div>
+              </td>
+              <td>
+                ${b.QRCodeURL ? `
+                  <div style="text-align: center;">
+                    <a href="/checkin.html?bookingId=${b.BookingID}&fromLogin=1" target="_blank">
+                      <img 
+                        src="${b.QRCodeURL}" 
+                        alt="QR Code"
+                        style="width: 90px; height: auto; border: 1px solid #ccc; border-radius: 6px; padding: 4px; background: #fff;" 
+                      />
+                    </a>
+                  </div>
+                ` : '<span class="text-muted text-sm">—</span>'}
+              </td>
+              <td><p class="text-sm">${b.OwnerName}</p></td>
+              <td><p class="text-sm">${b.RoomNumber || '—'}</p></td>
+              <td><p class="text-sm">${b.CheckInDate}</p></td>
+              <td><p class="text-sm">${daysLeft} day${daysLeft !== 1 ? 's' : ''}</p></td>
+              <td><span class="status-btn success-btn">Checked In</span></td>
+            </tr>`;
+        }
+      });
+
+      loadCharts(petSpeciesCount, statusCount);
+
+    } catch (err) {
+      console.error("Error loading dashboard data:", err);
+    }
+  }
+
+  /**
+   * Load room availability for dogs & cats.
+   */
+  async function loadRoomAvailability() {
+    try {
+      // Use global config for availability API
+      const res = await fetch(window.PETSTAY_CONFIG.ROOMS_AVAILABILITY_API_URL);
+      const result = await res.json();
+      const stats = result.stats;
+
+      if (res.ok && Array.isArray(stats.rooms)) {
+        let totalDog = 0, availableDog = 0;
+        let totalCat = 0, availableCat = 0;
+
+        stats.rooms.forEach(r => {
+          if (r.petType === "Dog") {
+            totalDog++;
+            if (!r.isOccupied) availableDog++;
+          } else if (r.petType === "Cat") {
+            totalCat++;
+            if (!r.isOccupied) availableCat++;
+          }
+        });
+
+        document.getElementById("dogRooms").innerText = `${availableDog} / ${totalDog}`;
+        document.getElementById("catRooms").innerText = `${availableCat} / ${totalCat}`;
+
+        if (availableDog === 0 || availableCat === 0) {
+          const toast = new bootstrap.Toast(document.getElementById("availabilityToast"));
+          const msg = `${availableDog === 0 ? 'No dog rooms available. ' : ''}${availableCat === 0 ? 'No cat rooms available.' : ''}`;
+          document.getElementById("availabilityMessage").textContent = msg;
+          toast.show();
+        }
+      }
+    } catch (err) {
+      console.error("Room availability error:", err);
+    }
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const shouldRefresh = urlParams.get("refresh") === "1";
+
+    document.getElementById("refreshBtn")?.addEventListener("click", () => {
+      loadDashboardData();
+      loadRoomAvailability();
+    });
+
+    loadDashboardData();
+    loadRoomAvailability();
+
+    document.querySelector("select.light-bg")?.addEventListener("change", (e) => {
+      loadDashboardData(e.target.value);
+    });
+
+    if (shouldRefresh) {
+      console.log("Auto-refresh triggered after check-in");
+      setTimeout(() => location.href = '/admin-frontend/admin_dashboard.html', 500);
+    }
+  });
+
+  function loadCharts(petSpeciesCount, statusCount) {
+    const ctxSpecies = document.getElementById("PetSpeciesChart")?.getContext("2d");
+    if (ctxSpecies) {
+      new Chart(ctxSpecies, {
+        type: "bar",
+        data: {
+          labels: ["Dogs", "Cats"],
+          datasets: [{
+            label: "Pets",
+            data: [petSpeciesCount.Dog, petSpeciesCount.Cat],
+            backgroundColor: ["#365CF5", "#d50100"],
+            borderRadius: 10
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            tooltip: {
+              backgroundColor: "#F3F6F8",
+              titleColor: "#8F92A1",
+              bodyColor: "#171717",
+              bodyFont: { weight: "bold", size: 16 },
+              displayColors: false
+            },
+            legend: { display: false }
+          }
+        }
+      });
+    }
+
+    const ctxBookingStatus = document.getElementById("BookingStatusPieChart")?.getContext("2d");
+    if (ctxBookingStatus) {
+      new Chart(ctxBookingStatus, {
+        type: "pie",
+        data: {
+          labels: Object.keys(statusCount),
+          datasets: [{
+            data: Object.values(statusCount),
+            backgroundColor: [
+              "#FFC107",  // Pending
+              "#28A745",  // Confirmed
+              "#007BFF",  // Checked-In
+              "#6C757D",  // Checked-Out
+              "#DC3545"   // Cancelled
+            ],
+            borderWidth: 2
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: "bottom",
+              labels: { boxWidth: 20, padding: 20 }
+            },
+            tooltip: {
+              backgroundColor: "#F3F6F8",
+              bodyColor: "#171717",
+              titleColor: "#8F92A1",
+              bodyFont: { size: 14 },
+              displayColors: true
+            }
+          }
+        }
+      });
+    }
+  }
+</script>
+
+
+</body>
+
+</html>

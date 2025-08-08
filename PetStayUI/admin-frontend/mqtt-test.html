@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>PetStay Admin IoT Dashboard</title>
+
+  <!-- AWS Amplify, MQTT, CryptoJS -->
+  <script src="https://cdn.jsdelivr.net/npm/aws-amplify@latest/dist/aws-amplify.min.js"></script>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
+
+  <style>
+    body { font-family: Arial, sans-serif; padding: 1rem; }
+    #log {
+      white-space: pre-wrap;
+      background: #f7f7f7;
+      border: 1px solid #ccc;
+      padding: 1rem;
+      height: 200px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+
+<h1>PetStay Admin IoT Dashboard</h1>
+<button id="connectBtn">Connect to IoT</button>
+<div id="log">Logs will appear here...</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Configuration
+  window.PETSTAY_CONFIG = {
+    AWS_REGION: 'us-east-1',
+    COGNITO_USER_POOL_ID: 'us-east-1_QIxGKKFzG',
+    COGNITO_USER_POOL_CLIENT_ID: '7pk31b8a5ak2b7aj42qimaibhc',
+    COGNITO_DOMAIN: 'us-east-1qixgkkfzg.auth.us-east-1.amazoncognito.com',
+    REDIRECT_SIGN_IN_URL: window.location.origin + '/admin-frontend/post-login.html',
+    REDIRECT_SIGN_OUT_URL: window.location.origin + '/index.html',
+    IDENTITY_POOL_ID: 'us-east-1:25fbdcc1-9e3d-4655-adbf-679d2f895c0c',
+    IOT_ENDPOINT: 'a14wno4fkns9pt-ats.iot.us-east-1.amazonaws.com',
+    IOT_TOPIC_DASHBOARD: 'petstay/admin/stats',
+    IOT_CLIENT_PREFIX: 'admin-dashboard-',
+  };
+
+  const logEl = document.getElementById('log');
+  function log(msg) {
+    console.log(msg);
+    logEl.textContent += '\n' + msg;
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  // Load Amplify safely
+  window.Amplify = window.aws_amplify?.Amplify;
+  window.Auth = window.aws_amplify?.Auth;
+
+  if (!window.Amplify || !window.Auth) {
+    log("❌ AWS Amplify or Auth not available. Check script loading.");
+    return;
+  }
+
+  // Configure Amplify
+  window.Amplify.configure({
+    Auth: {
+      region: window.PETSTAY_CONFIG.AWS_REGION,
+      userPoolId: window.PETSTAY_CONFIG.COGNITO_USER_POOL_ID,
+      userPoolWebClientId: window.PETSTAY_CONFIG.COGNITO_USER_POOL_CLIENT_ID,
+      identityPoolId: window.PETSTAY_CONFIG.IDENTITY_POOL_ID,
+      mandatorySignIn: true,
+      oauth: {
+        domain: window.PETSTAY_CONFIG.COGNITO_DOMAIN,
+        scope: ['email', 'openid', 'profile'],
+        redirectSignIn: window.PETSTAY_CONFIG.REDIRECT_SIGN_IN_URL,
+        redirectSignOut: window.PETSTAY_CONFIG.REDIRECT_SIGN_OUT_URL,
+        responseType: 'code',
+      }
+    }
+  });
+
+  // Crypto helpers
+  function sha256(msg) {
+    return CryptoJS.SHA256(msg).toString(CryptoJS.enc.Hex);
+  }
+
+  function hmac(key, msg) {
+    return CryptoJS.HmacSHA256(CryptoJS.enc.Utf8.parse(msg), key);
+  }
+
+  function signUrl(endpoint, region, credentials) {
+    const now = new Date();
+    const amzdate = now.toISOString().replace(/[:-]|\.\d{3}/g, '');
+    const datestamp = amzdate.slice(0, 8);
+    const service = 'iotdevicegateway';
+    const algorithm = 'AWS4-HMAC-SHA256';
+    const method = 'GET';
+    const canonicalUri = '/mqtt';
+    const host = endpoint.replace(/^wss?:\/\//, '');
+
+    const credentialScope = `${datestamp}/${region}/${service}/aws4_request`;
+    const queryParams = [
+      `X-Amz-Algorithm=${algorithm}`,
+      `X-Amz-Credential=${encodeURIComponent(credentials.accessKeyId + '/' + credentialScope)}`,
+      `X-Amz-Date=${amzdate}`,
+      `X-Amz-SignedHeaders=host`
+    ];
+    if (credentials.sessionToken) {
+      queryParams.push(`X-Amz-Security-Token=${encodeURIComponent(credentials.sessionToken)}`);
+    }
+
+    const canonicalQuerystring = queryParams.join('&');
+    const canonicalHeaders = `host:${host}\n`;
+    const signedHeaders = 'host';
+    const payloadHash = sha256('');
+    const canonicalRequest = [method, canonicalUri, canonicalQuerystring, canonicalHeaders, signedHeaders, payloadHash].join('\n');
+    const stringToSign = [algorithm, amzdate, credentialScope, sha256(canonicalRequest)].join('\n');
+
+    const kDate = hmac(CryptoJS.enc.Utf8.parse(`AWS4${credentials.secretAccessKey}`), datestamp);
+    const kRegion = hmac(kDate, region);
+    const kService = hmac(kRegion, service);
+    const kSigning = hmac(kService, 'aws4_request');
+
+    const signature = CryptoJS.HmacSHA256(stringToSign, kSigning).toString(CryptoJS.enc.Hex);
+    return `wss://${host}${canonicalUri}?${canonicalQuerystring}&X-Amz-Signature=${signature}`;
+  }
+
+  let mqttClient = null;
+
+  async function connectToIoT() {
+    log('Checking user authentication...');
+    try {
+      const user = await window.Amplify.Auth.currentAuthenticatedUser();
+      log('User authenticated: ' + user.username);
+
+      const creds = await window.Amplify.Auth.currentCredentials();
+      const credentials = {
+        accessKeyId: creds.accessKeyId,
+        secretAccessKey: creds.secretAccessKey,
+        sessionToken: creds.sessionToken,
+      };
+      log('Obtained temporary AWS credentials.');
+
+      const signedUrl = signUrl(window.PETSTAY_CONFIG.IOT_ENDPOINT, window.PETSTAY_CONFIG.AWS_REGION, credentials);
+      log('Generated signed WebSocket URL.');
+
+      if (mqttClient) {
+        mqttClient.end(true);
+        mqttClient = null;
+      }
+
+      mqttClient = mqtt.connect(signedUrl, {
+        clientId: window.PETSTAY_CONFIG.IOT_CLIENT_PREFIX + Math.floor(Math.random() * 100000),
+        keepalive: 60,
+        clean: true,
+        reconnectPeriod: 5000,
+        protocol: 'wss',
+      });
+
+      mqttClient.on('connect', () => {
+        log('✅ Connected to AWS IoT.');
+        mqttClient.subscribe(window.PETSTAY_CONFIG.IOT_TOPIC_DASHBOARD, (err) => {
+          if (err) log('❌ Subscribe error: ' + err.message);
+          else log('📡 Subscribed to topic: ' + window.PETSTAY_CONFIG.IOT_TOPIC_DASHBOARD);
+        });
+      });
+
+      mqttClient.on('message', (topic, payload) => {
+        log(`📥 Message on topic ${topic}: ${payload.toString()}`);
+      });
+
+      mqttClient.on('error', (err) => log('MQTT error: ' + err.message));
+      mqttClient.on('close', () => log('MQTT connection closed'));
+    } catch (err) {
+      log('❌ Connection failed: ' + err.message);
+      console.error(err);
+    }
+  }
+
+  document.getElementById('connectBtn').addEventListener('click', connectToIoT);
+});
+</script>
+
+</body>
+</html>

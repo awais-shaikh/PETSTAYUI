@@ -1,0 +1,161 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "CloudFormation template for EventBridge Event bus",
+  "Resources": {
+    "Ruleb8fa73f6": {
+      "Type": "AWS::Events::Rule",
+      "DependsOn": ["EventBusc840a3a9"],
+      "Properties": {
+        "Name": "BookingCancelledRule",
+        "EventPattern": "{\"source\":[\"PetStay.Booking\"],\"detail-type\":[\"BookingCancelled\"]}",
+        "State": "ENABLED",
+        "Description": "Status Cancelled",
+        "EventBusName": "PetStayBus",
+        "Targets": [{
+          "Id": "Id092a8fe0-cef9-4405-9173-159277c59604",
+          "Arn": {
+            "Fn::Sub": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:AdminDashboardHandler"
+          },
+          "RoleArn": "arn:aws:iam::664418950974:role/service-role/AdminDashboardHandler-role-q9ys3n75"
+        }]
+      }
+    },
+    "Rule91a649a3": {
+      "Type": "AWS::Events::Rule",
+      "DependsOn": ["EventBusc840a3a9"],
+      "Properties": {
+        "Name": "BookingCheckedInRule",
+        "EventPattern": "{\"source\":[\"PetStay.Booking\"],\"detail-type\":[\"BookingCheckedIn\"]}",
+        "State": "ENABLED",
+        "Description": "Status Checked-In",
+        "EventBusName": "PetStayBus",
+        "Targets": [{
+          "Id": "Id92140540-03d9-4d10-959e-0ddbfe6c1fff",
+          "Arn": {
+            "Fn::Sub": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:AdminDashboardHandler"
+          },
+          "RoleArn": "arn:aws:iam::664418950974:role/service-role/AdminDashboardHandler-role-q9ys3n75"
+        }]
+      }
+    },
+    "Rule0c30e823": {
+      "Type": "AWS::Events::Rule",
+      "DependsOn": ["EventBusc840a3a9"],
+      "Properties": {
+        "Name": "BookingCheckedOutRule",
+        "EventPattern": "{\"source\":[\"PetStay.Booking\"],\"detail-type\":[\"BookingCheckedOut\"]}",
+        "State": "ENABLED",
+        "Description": "Status Checked-Out",
+        "EventBusName": "PetStayBus",
+        "Targets": [{
+          "Id": "Id7bae178d-f6a1-41e9-b306-5d31cc2b5fe5",
+          "Arn": {
+            "Fn::Sub": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:AdminDashboardHandler"
+          },
+          "RoleArn": "arn:aws:iam::664418950974:role/service-role/AdminDashboardHandler-role-q9ys3n75"
+        }]
+      }
+    },
+    "Rulef18c4d9a": {
+      "Type": "AWS::Events::Rule",
+      "DependsOn": ["EventBusc840a3a9"],
+      "Properties": {
+        "Name": "BookingConfirmedRule",
+        "EventPattern": "{\"source\":[\"PetStay.Booking\"],\"detail-type\":[\"BookingConfirmed\"]}",
+        "State": "ENABLED",
+        "Description": "Status Confirmed",
+        "EventBusName": "PetStayBus",
+        "Targets": [{
+          "Id": "Iddfb48207-37fb-4080-bde6-5bf0f1bbfe78",
+          "Arn": {
+            "Fn::Sub": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:AdminDashboardHandler"
+          },
+          "RoleArn": "arn:aws:iam::664418950974:role/service-role/AdminDashboardHandler-role-q9ys3n75"
+        }]
+      }
+    },
+    "Rule67cad829": {
+      "Type": "AWS::Events::Rule",
+      "DependsOn": ["EventBusc840a3a9"],
+      "Properties": {
+        "Name": "BookingCreatedRule",
+        "EventPattern": "{\"source\":[\"PetStay.Booking\"],\"detail-type\":[\"BookingCreated\"]}",
+        "State": "ENABLED",
+        "Description": "Status Pending",
+        "EventBusName": "PetStayBus",
+        "Targets": [{
+          "Id": "Id6ce1d38d-dff3-48e3-83ae-1bf4707c3575",
+          "Arn": {
+            "Fn::Sub": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:AdminDashboardHandler"
+          },
+          "RoleArn": "arn:aws:iam::664418950974:role/service-role/AdminDashboardHandler-role-q9ys3n75"
+        }]
+      }
+    },
+    "Rule4a023aa1": {
+      "Type": "AWS::Events::Rule",
+      "DependsOn": ["EventBusc840a3a9"],
+      "Properties": {
+        "Name": "BookingRestoredRule",
+        "EventPattern": "{\"source\":[\"PetStay.Booking\"],\"detail-type\":[\"BookingRestored\"]}",
+        "State": "ENABLED",
+        "Description": "Status Restore",
+        "EventBusName": "PetStayBus",
+        "Targets": [{
+          "Id": "Ide3e3d098-f351-4e93-9aab-958bf7215504",
+          "Arn": {
+            "Fn::Sub": "arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:AdminDashboardHandler"
+          },
+          "RoleArn": "arn:aws:iam::664418950974:role/service-role/AdminDashboardHandler-role-q9ys3n75"
+        }]
+      }
+    },
+    "EventBusc840a3a9": {
+      "Type": "AWS::Events::EventBus",
+      "Properties": {
+        "Name": "PetStayBus",
+        "LogConfig": {
+          "IncludeDetail": "FULL",
+          "Level": "ERROR"
+        }
+      }
+    },
+    "DeliverySourcee5a0e509": {
+      "Type": "AWS::Logs::DeliverySource",
+      "DependsOn": "EventBusc840a3a9",
+      "Properties": {
+        "Name": "EventBusSource-PetStayBus-ERROR_LOGS",
+        "LogType": "ERROR_LOGS",
+        "ResourceArn": "arn:aws:events:us-east-1:664418950974:event-bus/PetStayBus"
+      }
+    },
+    "DeliveryDestination97112307": {
+      "Type": "AWS::Logs::DeliveryDestination",
+      "Properties": {
+        "Name": "EventsDeliveryDestination-483512073",
+        "DestinationResourceArn": {
+          "Ref": "CloudWatchLogsDestinationArn"
+        }
+      }
+    },
+    "Delivery7c29e4b4": {
+      "Type": "AWS::Logs::Delivery",
+      "DependsOn": ["DeliverySourcee5a0e509", "DeliveryDestination97112307"],
+      "Properties": {
+        "DeliverySourceName": {
+          "Ref": "DeliverySourcee5a0e509"
+        },
+        "DeliveryDestinationArn": {
+          "Fn::GetAtt": ["DeliveryDestination97112307", "Arn"]
+        }
+      }
+    }
+  },
+  "Parameters": {
+    "CloudWatchLogsDestinationArn": {
+      "Type": "String",
+      "Description": "ARN of the CloudWatchLogs destination for log delivery",
+      "Default": "arn:aws:logs:us-east-1:664418950974:log-group:/aws/vendedlogs/events/event-bus/PetStayBus"
+    }
+  }
+}

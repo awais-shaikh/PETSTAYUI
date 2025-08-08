@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="/assets/images/favicon.svg" type="image/x-icon" />
+  <title>Mange Bookings | PetStay Admin Panel</title>
+
+  <!-- ========== All CSS files linkup ========= -->
+  <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+  <!-- <link rel="stylesheet" href="/assets/css/lineicons.css" /> -->
+  <link rel="stylesheet" href="https://cdn.lineicons.com/3.0/lineicons.css">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+  <!-- <link rel="stylesheet" href="/assets/css/fullcalendar.css" /> -->
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <script src="/assets/js/config.js"></script>
+</head>
+
+<body>
+  <!-- ======== sidebar-nav start =========== -->
+  <aside class="sidebar-nav-wrapper">
+    <div class="navbar-logo">
+      <a href="/admin-frontend/admin_dashboard.html">
+
+        <img src="/assets/images/logo/ASnT5o01.svg" alt="PetHostelFlow" />
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li class="nav-item">
+          <a href="/admin-frontend/admin_dashboard.html">
+
+            <span class="icon">
+              <i class="lni lni-dashboard"></i>
+            </span>
+            <span class="text">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/admin-frontend/manage_bookings.html">
+            <span class="icon">
+              <i class="lni lni-calendar"></i>
+            </span>
+            <span class="text">Bookings</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <div class="overlay"></div>
+  <!-- ======== sidebar-nav end =========== -->
+
+  <!-- ======== main-wrapper start =========== -->
+  <main class="main-wrapper">
+    <header class="header">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-5 col-md-5 col-6">
+            <div class="header-left d-flex align-items-center">
+              <div class="menu-toggle-btn mr-15">
+                <button id="menu-toggle" class="main-btn primary-btn btn-hover">
+                  <i class="lni lni-chevron-left me-2"></i> Menu
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-7 col-md-7 col-6">
+            <div class="header-right">
+              <div class="profile-box ml-15">
+                <button class="dropdown-toggle bg-transparent border-0" type="button" id="profile"
+                  data-bs-toggle="dropdown" aria-expanded="false">
+                  <div class="profile-info">
+                    <div class="info d-flex align-items-center">
+                      <div class="image">
+                        <img src="/assets/images/profile/profile-image.png" alt="Profile image" />
+                      </div>
+                      <div>
+                        <!-- Email inserted here by JS -->
+                        <h6 class="fw-500 mb-0" id="adminEmail">
+                          <span class="spinner-border spinner-border-sm" role="status"></span>
+                          Loading...
+                        </h6>
+                        <p class="mb-0">Admin</p>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+
+                <!-- Dropdown -->
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profile">
+                  <li>
+                    <div class="author-info d-flex align-items-center p-2">
+                      <div class="image">
+                        <img src="/assets/images/profile/profile-image.png" alt="Dropdown image">
+                      </div>
+                      <div class="content ms-2">
+                        <h4 class="text-sm mb-1">Admin</h4> <!-- Name dynamically set here -->
+                        <!-- Email dynamically set here -->
+                        <a id="adminEmailDropdown" class="text-muted text-xs" href="#">Loading...</a>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <a href="javascript:void(0);" id="signOutBtn" class="dropdown-item">
+                      <i class="lni lni-exit me-1"></i> Sign Out
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- ========== header end ========== -->
+
+    <!-- ========== table components start ========== -->
+    <section class="table-components">
+      <div class="container-fluid">
+        <!-- ========== title-wrapper start ========== -->
+        <div class="title-wrapper pt-30">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <div class="title">
+                <h2>Manage Bookings</h2>
+              </div>
+            </div>
+            <!-- end col -->
+            <div class="col-md-6">
+              <div class="breadcrumb-wrapper">
+                <nav aria-label="breadcrumb">
+                  <ol class="breadcrumb">
+                    <li class="breadcrumb-item">
+                      <a href="#0">Dashboard</a>
+                    </li>
+                    <li class="breadcrumb-item active" aria-current="page">
+                      Manage Bookings
+                    </li>
+                  </ol>
+                </nav>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="tables-wrapper">
+          <div class="row mb-4">
+            <div class="col-md-4">
+              <input type="text" class="form-control" id="searchInput" placeholder="Search by name..." />
+            </div>
+            <div class="col-md-3">
+              <select class="form-control" id="statusFilter">
+                <option value="">All Statuses</option>
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Checked-In">Checked-In</option>
+                <option value="Checked-Out">Checked-Out</option>
+                <option value="Cancelled">Cancelled</option>
+              </select>
+            </div>
+            <div class="col-md-3">
+              <select class="form-control" id="speciesFilter">
+                <option value="">All Species</option>
+                <option value="Dog">Dog</option>
+                <option value="Cat">Cat</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="card-style mb-30">
+                <h6 class="mb-10">Manage Bookings</h6>
+                <p class="text-sm mb-20">View and manage current and upcoming pet bookings.</p>
+                <div class="table-wrapper table-responsive">
+                  <table class="table">
+                    <thead>
+                      <tr>
+                        <th>#</th>
+                        <th>Customer</th>
+                        <th>Pet Name</th>
+                        <th>Species</th>
+                        <th>Breed</th>
+                        <th>Age</th>
+                        <th>Check-In</th>
+                        <th>Check-Out</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+
+                    <tbody id="bookingsTableBody"> </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <!-- Booking Details Modal -->
+        <div class="modal fade" id="bookingModal" tabindex="-1" aria-labelledby="bookingModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-scrollable modal-md">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="bookingModalLabel">Booking Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body" id="modalDetails">
+                <!-- Dynamically populated -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Toast Container -->
+        <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+          <div id="toast" class="toast align-items-center text-white bg-success border-0" role="alert"
+            aria-live="polite" aria-atomic="true" data-bs-autohide="true" data-bs-delay="3000">
+
+            <div class="d-flex">
+              <div class="toast-body" id="toastMessage">Success!</div>
+              <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- QR Code Modal -->
+      <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="qrModalLabel">QR Code</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body text-center">
+              <img id="qrModalImage" src="" alt="QR Code" class="img-fluid" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- ========== table components end ========== -->
+
+    <!-- ========== footer start =========== -->
+    <footer class="footer">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-6 order-last order-md-first">
+            <div class="copyright text-center text-md-start">
+              <p class="text-sm">
+                Designed and Developed by AWSome Squad - FRONTEND TEAM
+              </p>
+            </div>
+          </div>
+
+        </div>
+        <!-- end row -->
+      </div>
+      <!-- end container -->
+    </footer>
+    <!-- ========== footer end =========== -->
+  </main>
+  <!-- ======== main-wrapper end =========== -->
+
+  <!-- ========= All Javascript files linkup ======== -->
+  <script src="/assets/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/Chart.min.js"></script>
+  <script src="/assets/js/dynamic-pie-chart.js"></script>
+  <script src="/assets/js/moment.min.js"></script>
+  <script src="/assets/js/jvectormap.min.js"></script>
+  <script src="/assets/js/world-merc.js"></script>
+  <script src="/assets/js/polyfill.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <!-- Your main.js and all other script imports -->
+  <script src="/assets/js/main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/aws-amplify@latest/dist/aws-amplify.min.js"></script>
+  <script src="/assets/js/auth-check.js"></script>
+
+  <script>
+    /**
+     * Get the Cognito Auth Token for secure API calls
+     */
+    async function getAuthToken() {
+      // Use Amplify to get the current user session
+      const session = await Amplify.Auth.currentSession();
+      // Return the JWT token for the ID Token
+      return session.getIdToken().getJwtToken();
+    }
+
+    // Stores all bookings in memory for search/filter
+    let allBookings = [];
+
+    /**
+     * When the page loads:
+     * - Fetch bookings from API
+     * - Hook up search input and filter dropdowns
+     */
+    document.addEventListener("DOMContentLoaded", async () => {
+      await loadBookings(); // Initial load
+
+      // Hook up search input field
+      document.getElementById("searchInput").addEventListener("input", () => renderBookings(allBookings));
+
+      // Hook up status filter dropdown
+      document.getElementById("statusFilter").addEventListener("change", () => renderBookings(allBookings));
+
+      // Hook up species filter dropdown
+      document.getElementById("speciesFilter").addEventListener("change", () => renderBookings(allBookings));
+    });
+
+    /**
+     * Fetch all bookings from API Gateway.
+     * Calls your Lambda → DynamoDB → returns JSON.
+     */
+    async function loadBookings() {
+      try {
+        // Fetch bookings using your global config URL
+        const res = await fetch(window.PETSTAY_CONFIG.BOOKINGS_API_URL);
+        const result = await res.json();
+
+        // Store in global variable
+        allBookings = result.bookings;
+
+        // Render to HTML table
+        renderBookings(allBookings);
+
+        console.log("Loaded bookings:", allBookings);
+      } catch (err) {
+        console.error("Failed to load bookings:", err);
+      }
+    }
+
+    /**
+     * Render bookings to the HTML table:
+     * - Filters by search & dropdowns
+     * - Adds action buttons
+     */
+    function renderBookings(bookings) {
+      const tbody = document.getElementById("bookingsTableBody");
+
+      // Get search & filter values
+      const searchValue = document.getElementById("searchInput")?.value.toLowerCase() || "";
+      const statusFilter = document.getElementById("statusFilter")?.value || "";
+      const speciesFilter = document.getElementById("speciesFilter")?.value || "";
+
+      // Filter bookings
+      const filtered = bookings.filter(b =>
+        (!statusFilter || b.Status === statusFilter) &&
+        (!speciesFilter || b.PetSpecies === speciesFilter) &&
+        (
+          b.OwnerName?.toLowerCase().includes(searchValue) ||
+          b.PetName?.toLowerCase().includes(searchValue)
+        )
+      );
+
+      // Clear old rows
+      tbody.innerHTML = "";
+
+      // Add rows for each filtered booking
+      filtered.forEach((b, index) => {
+        const status = b.Status?.toLowerCase() || "";
+        const statusClass = {
+          "pending": "info-btn",
+          "confirmed": "active-btn",
+          "checked-in": "success-btn",
+          "checked-out": "warning-btn",
+          "cancelled": "close-btn"
+        }[status] || "info-btn";
+
+        // Decide which action buttons to show
+        const showCheckout = b.Status === "Checked-In";
+        const showCheckIn = b.Status === "Confirmed";
+        const showConfirm = b.Status === "Pending";
+        const showRestore = status === "cancelled";
+        const showQR = (b.QRCodeURL || b.QRBase64) && !showRestore;
+
+        // Append table row
+        tbody.innerHTML += `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${b.OwnerName}</td>
+          <td>${b.PetName}</td>
+          <td>${b.PetSpecies || "N/A"}</td>
+          <td>${b.PetBreed || "N/A"}</td>
+          <td>${b.PetAge || "N/A"}</td>
+          <td>${b.CheckInDate}</td>
+          <td>${b.CheckOutDate}</td>
+          <td><span class="status-btn ${statusClass}">${b.Status}</span></td>
+          <td>
+            <div class="action">
+              <!-- View details button -->
+              <button class="text-primary" title="View Details" onclick='viewBooking(${JSON.stringify(b)})'>
+                <span class="material-icons">visibility</span>
+              </button>
+
+              <!-- Cancel button (unless restoring) -->
+              ${!showRestore ? `
+                <button class="text-danger" title="Cancel Booking" onclick="cancelBooking('${b.BookingID}')">
+                  <span class="material-icons">delete</span>
+                </button>` : ""
+          }
+
+              <!-- Confirm button (Pending only) -->
+              ${showConfirm ? `
+                <button class="text-warning" title="Confirm Booking" onclick="confirmBooking('${b.BookingID}')">
+                  <span class="material-icons">check_circle</span>
+                </button>` : ""
+          }
+
+              <!-- Check In button (Confirmed only) -->
+              ${showCheckIn ? `
+                <button class="text-info" title="Check In" onclick="checkinBooking('${b.BookingID}')">
+                  <span class="material-icons">login</span>
+                </button>` : ""
+          }
+
+              <!-- Check Out button (Checked-In only) -->
+              ${showCheckout ? `
+                <button class="text-success" title="Check Out" onclick="checkoutBooking('${b.BookingID}')">
+                  <span class="material-icons">logout</span>
+                </button>` : ""
+          }
+
+              <!-- Restore button (Cancelled only) -->
+              ${showRestore ? `
+                <button class="text-info" title="Restore Booking" onclick="restoreBooking('${b.BookingID}')">
+                  <span class="material-icons">restore</span>
+                </button>` : ""
+          }
+
+              <!-- View QR button if exists -->
+              ${showQR ? `
+  <button 
+    class="text-secondary"
+    title="View QR Code"
+    data-url="${b.QRCodeURL || 'data:image/png;base64,' + b.QRBase64}"
+    onclick="showQRModal(this)">
+    <span class="material-icons">qr_code</span>
+  </button>` : ""
+          }
+            </div>
+          </td>
+        </tr>
+      `;
+      });
+    }
+
+    /**
+     * Cancel a booking
+     */
+    async function cancelBooking(id) {
+      if (!confirm("Cancel this booking?")) return;
+      try {
+        // Get token for secure call
+        const token = await getAuthToken();
+
+        // Call backend to cancel booking using config
+        const res = await fetch(`${window.PETSTAY_CONFIG.BOOKINGS_API_URL}/${id}/cancel`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        const data = await res.json();
+        if (res.status === 403) {
+          showToast("Not authorized to cancel", true);
+        } else {
+          showToast(data.message || "Cancelled");
+          await loadBookings();
+        }
+      } catch (err) {
+        showToast("Error cancelling booking", true);
+        console.error(err);
+      }
+    }
+
+    /**
+     * Check out a guest
+     */
+    async function checkoutBooking(id) {
+      if (!confirm("Check out this guest?")) return;
+      try {
+        const token = await getAuthToken();
+        const res = await fetch(`${window.PETSTAY_CONFIG.BOOKINGS_API_URL}/${id}/checkout`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.status === 403) {
+          showToast("Not authorized to check out", true);
+        } else {
+          showToast(data.message || "Checked out");
+          await loadBookings();
+        }
+      } catch (err) {
+        showToast("Error checking out", true);
+        console.error(err);
+      }
+    }
+
+    /**
+     * Confirm a booking (Pending → Confirmed)
+     */
+    async function confirmBooking(id) {
+      if (!confirm("Confirm this booking?")) return;
+      try {
+        const token = await getAuthToken();
+        const res = await fetch(`${window.PETSTAY_CONFIG.BOOKINGS_API_URL}/${id}/confirm`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.status === 403) {
+          showToast("Not authorized to confirm", true);
+        } else {
+          showToast(data.message || "Confirmed");
+          await loadBookings();
+        }
+      } catch (err) {
+        showToast("Error confirming booking", true);
+        console.error(err);
+      }
+    }
+
+    /**
+     * Check in a guest (Confirmed → Checked-In)
+     */
+    async function checkinBooking(id) {
+      if (!confirm("Mark guest as Checked-In?")) return;
+      try {
+        const token = await getAuthToken();
+        const res = await fetch(`${window.PETSTAY_CONFIG.BOOKINGS_API_URL}/${id}/checkin`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.status === 403) {
+          showToast("Not authorized to check in", true);
+        } else {
+          showToast(data.message || "Checked-In");
+          await loadBookings();
+        }
+      } catch (err) {
+        showToast("Error checking in", true);
+        console.error(err);
+      }
+    }
+
+    /**
+     * Restore a cancelled booking
+     */
+    async function restoreBooking(id) {
+      if (!confirm("Restore this cancelled booking?")) return;
+      try {
+        const token = await getAuthToken();
+        const res = await fetch(`${window.PETSTAY_CONFIG.BOOKINGS_API_URL}/${id}/restore`, {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        showToast(data.message || "Restored");
+        await loadBookings();
+      } catch (err) {
+        showToast("Error restoring", true);
+        console.error(err);
+      }
+    }
+
+    /**
+     * Show booking details in a modal popup
+     */
+    function viewBooking(b) {
+      const html = `
+      <p><strong>Owner:</strong> ${b.OwnerName}</p>
+      <p><strong>Email:</strong> ${b.Email}</p>
+      <p><strong>Phone:</strong> ${b.PhoneNumber}</p>
+      <hr>
+      <p><strong>Pet:</strong> ${b.PetName} (${b.PetSpecies}, ${b.PetBreed || "N/A"})</p>
+      <p><strong>Age:</strong> ${b.PetAge}</p>
+      <hr>
+      <p><strong>Check-In:</strong> ${b.CheckInDate}</p>
+      <p><strong>Check-Out:</strong> ${b.CheckOutDate}</p>
+      <p><strong>Status:</strong> ${b.Status}</p>
+      <p><strong>Room:</strong> ${b.RoomNumber || "N/A"}</p>
+    `;
+      document.getElementById("modalDetails").innerHTML = html;
+      new bootstrap.Modal(document.getElementById("bookingModal")).show();
+    }
+
+    /**
+     * Show a success or error toast message
+     */
+    function showToast(msg, isError = false) {
+      const toastEl = document.getElementById("toast");
+      const toastMsg = document.getElementById("toastMessage");
+      toastMsg.textContent = msg;
+      toastEl.classList.remove("bg-success", "bg-danger");
+      toastEl.classList.add(isError ? "bg-danger" : "bg-success");
+      bootstrap.Toast.getOrCreateInstance(toastEl).show();
+    }
+
+    /**
+     * Show QR Code in modal
+     */
+    function showQRModal(button) {
+      const qrUrl = button.dataset.url;
+      if (!qrUrl) {
+        alert("QR not available");
+        return;
+      }
+      const img = document.getElementById("qrModalImage");
+      img.src = qrUrl;
+      new bootstrap.Modal(document.getElementById("qrModal")).show();
+    }
+  </script>
+
+</body>
+
+</html>

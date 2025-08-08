@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="/assets/images/favicon.svg" type="image/x-icon" />
+  <title>IoT Live Stats</title>
+
+  <!-- CSS Dependencies -->
+  <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/assets/css/materialdesignicons.min.css" />
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <link href="https://cdn.lineicons.com/3.0/lineicons.css" rel="stylesheet" />
+
+  <!-- JS Dependencies -->
+  <script src="https://unpkg.com/aws-amplify@4.3.39/dist/aws-amplify.min.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js"></script>
+  <script src="https://sdk.amazonaws.com/js/aws-sdk-2.1471.0.min.js"></script>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/crypto-js@4.1.1/crypto-js.min.js"></script>
+  <script src="/assets/js/config.js"></script>
+</head>
+
+<body>
+  <aside class="sidebar-nav-wrapper">
+    <div class="navbar-logo">
+      <a href="/admin-frontend/admin_dashboard.html">
+        <img src="/assets/images/logo/ASnT5o01.svg" alt="PetHostelFlow" />
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li class="nav-item">
+          <a href="/admin-frontend/admin_dashboard.html">
+            <span class="icon"><i class="lni lni-dashboard"></i></span>
+            <span class="text">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/admin-frontend/manage_bookings.html">
+            <span class="icon"><i class="lni lni-calendar"></i></span>
+            <span class="text">Bookings</span>
+          </a>
+        </li>
+        <li class="nav-item active">
+          <a href="/admin-frontend/iot-dashboard.html">
+            <span class="icon"><i class="lni lni-stats-up"></i></span>
+            <span class="text">IoT Live Stats</span>
+          </a>
+        </li>
+
+<li class="nav-item active">
+          <a href="/admin-frontend/mqtt-test.html">
+            <span class="icon"><i class="lni lni-stats-up"></i></span>
+            <span class="text">IoT Testing</span>
+          </a>
+        </li>
+
+
+
+      </ul>
+    </nav>
+  </aside>
+
+  <div class="overlay"></div>
+
+  <main class="main-wrapper">
+    <header class="header">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-5 col-md-5 col-6">
+            <div class="header-left d-flex align-items-center">
+              <div class="menu-toggle-btn mr-15">
+                <button id="menu-toggle" class="main-btn primary-btn btn-hover">
+                  <i class="lni lni-chevron-left me-2"></i> Menu
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-7 col-md-7 col-6">
+            <div class="header-right">
+              <div class="profile-box ml-15">
+                <button class="dropdown-toggle bg-transparent border-0" type="button" id="profile"
+                  data-bs-toggle="dropdown" aria-expanded="false">
+                  <div class="profile-info">
+                    <div class="info d-flex align-items-center">
+                      <div class="image">
+                        <img src="/assets/images/profile/profile-image.png" alt="Profile image" />
+                      </div>
+                      <div>
+                        <h6 class="fw-500 mb-0" id="adminEmail">
+                          <span class="spinner-border spinner-border-sm" role="status"></span>
+                          Loading...
+                        </h6>
+                        <p class="mb-0">Admin</p>
+                      </div>
+                    </div>
+                  </div>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profile">
+                  <li>
+                    <div class="author-info d-flex align-items-center p-2">
+                      <div class="image">
+                        <img src="/assets/images/profile/profile-image.png" alt="Dropdown image">
+                      </div>
+                      <div class="content ms-2">
+                        <h4 class="text-sm mb-1">Admin</h4>
+                        <a id="adminEmailDropdown" class="text-muted text-xs" href="#">Loading...</a>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <a href="javascript:void(0);" id="signOutBtn" class="dropdown-item">
+                      <i class="lni lni-exit me-1"></i> Sign Out
+                    </a>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- IoT Dashboard Section -->
+    <section class="section">
+      <div class="container-fluid">
+        <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+          <h2 class="fw-bold">Real-Time IoT Dashboard</h2>
+          <button class="btn btn-outline-primary btn-sm"
+            onclick="showReconnectToast(); connectToIoTDashboard()">Reconnect</button>
+        </div>
+
+        <div class="row g-4 mt-3">
+          <div class="col-md-6 col-xl-3">
+            <div class="icon-card h-100">
+              <div class="icon purple"><i class="mdi mdi-paw"></i></div>
+              <div class="content">
+                <h6>Current Guests</h6>
+                <h3 id="statCurrentGuests">—</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-xl-3">
+            <div class="icon-card h-100">
+              <div class="icon success"><i class="mdi mdi-door-open"></i></div>
+              <div class="content">
+                <h6>Available Rooms</h6>
+                <h3 id="statAvailableRooms">—</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-xl-3">
+            <div class="icon-card h-100">
+              <div class="icon warning"><i class="mdi mdi-dog-side"></i></div>
+              <div class="content">
+                <h6>Species Stats</h6>
+                <h3 id="statSpeciesStats">—</h3>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6 col-xl-3">
+            <div class="icon-card h-100">
+              <div class="icon info"><i class="mdi mdi-chart-line"></i></div>
+              <div class="content">
+                <h6>Booking Trends</h6>
+                <h3 id="statBookingTrends">—</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-4">
+          <div class="col-lg-12">
+            <div class="card-style mb-30">
+              <div class="title d-flex align-items-center justify-content-between">
+                <h6 class="text-medium">Booking Trend (Real-Time)</h6>
+              </div>
+              <div class="chart">
+                <canvas id="IoTBookingTrendChart" style="width: 100%; height: 400px;"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row mt-4">
+          <div class="col-lg-6">
+            <div class="card-style mb-30">
+              <div class="title">
+                <h6 class="text-medium">Species Distribution</h6>
+              </div>
+              <div class="chart">
+                <canvas id="SpeciesPieChart" style="width: 100%; height: 300px;"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-6 order-last order-md-first">
+            <div class="copyright text-center text-md-start">
+              <p class="text-sm">Designed and Developed by AWSome Squad - FRONTEND TEAM</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <script src="/assets/js/bootstrap.bundle.min.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <!-- <script defer src="/assets/js/auth-check.js"></script>
+  <script defer src="/assets/js/iot-dashboard.js"></script> -->
+
+
+<script>
+
+
+
+    // This function dynamically loads the dashboard and auth JS files in order
+    function loadDashboardAndAuth() {
+      console.log("Starting to load iot-dashboard.js...");
+      const dashboardScript = document.createElement('script');
+      dashboardScript.src = '/assets/js/iot-dashboard.js';
+      dashboardScript.onload = () => {
+        console.log("iot-dashboard.js loaded.");
+        if (!window.__PETSTAY_AUTH_CHECK_LOADED__) {
+          console.log("Loading auth-check.js...");
+          const authScript = document.createElement('script');
+          authScript.src = '/assets/js/auth-check.js';
+          authScript.onload = () => {
+            window.__PETSTAY_AUTH_CHECK_LOADED__ = true;
+            console.log("auth-check.js loaded.");
+
+            const Auth = window.Amplify?.Auth;
+            if (!Auth) {
+              console.warn("Amplify Auth not found.");
+              return;
+            }
+
+            Auth.currentAuthenticatedUser()
+              .then(() => {
+                console.log("User authenticated — initializing IoT...");
+                if (typeof connectToIoTDashboard === 'function') {
+                  connectToIoTDashboard();
+                }
+                if (typeof checkUser === 'function') {
+                  checkUser(true); // true = only update UI email, no redirect
+                }
+              })
+              .catch(err => {
+                console.warn("User not signed in:", err.message);
+              });
+          };
+          authScript.onerror = () => {
+            console.error("Failed to load auth-check.js");
+          };
+          document.body.appendChild(authScript);
+        } else {
+          console.log("auth-check.js already loaded — skipping load");
+
+          const Auth = window.Amplify?.Auth;
+          if (Auth) {
+            Auth.currentAuthenticatedUser()
+              .then(() => {
+                if (typeof checkUser === 'function') {
+                  checkUser(true);
+                }
+              })
+              .catch(() => {});
+          }
+        }
+      };
+      dashboardScript.onerror = () => {
+        console.error("Failed to load iot-dashboard.js");
+      };
+      document.body.appendChild(dashboardScript);
+    }
+
+    // Wait for Amplify and PETSTAY_CONFIG, then configure Amplify and load scripts
+    function waitForAmplify(attempts = 0) {
+      const cfg = window.PETSTAY_CONFIG;
+      const Amplify = window.aws_amplify?.default;
+
+      if (Amplify?.configure && Amplify?.Auth && cfg) {
+        window.Amplify = Amplify;
+        Amplify.configure({
+          Auth: {
+            region: cfg.AWS_REGION,
+            userPoolId: cfg.COGNITO_USER_POOL_ID,
+            userPoolWebClientId: cfg.COGNITO_USER_POOL_CLIENT_ID,
+            identityPoolId: cfg.IDENTITY_POOL_ID,
+            mandatorySignIn: true,
+            oauth: {
+              domain: cfg.COGNITO_DOMAIN,
+              scope: ['email', 'openid', 'profile'],
+              redirectSignIn: cfg.REDIRECT_SIGN_IN_URL,
+              redirectSignOut: cfg.REDIRECT_SIGN_OUT_URL,
+              responseType: 'code'
+            }
+          }
+        });
+        console.log("AWS Amplify configured successfully.");
+
+        loadDashboardAndAuth();
+
+      } else if (attempts < 10) {
+        console.warn(`Waiting for Amplify... (attempt ${attempts + 1})`);
+        setTimeout(() => waitForAmplify(attempts + 1), 300);
+      } else {
+        console.error("AWS Amplify failed to load after retries");
+      }
+    }
+
+    window.addEventListener("load", () => waitForAmplify());
+  </script>
+
+</body>
+
+</html>

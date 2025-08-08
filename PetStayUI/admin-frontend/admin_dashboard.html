@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="shortcut icon" href="/assets/images/favicon.svg" type="image/x-icon" />
+  <title>PetStay Admin Panel</title>
+
+  <!-- ========== All CSS files linkup ========= -->
+  <link rel="stylesheet" href="/assets/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="/assets/css/lineicons.css" rel="stylesheet" type="text/css" />
+  <link href="https://cdn.lineicons.com/2.0/LineIcons.css" rel="stylesheet">
+
+  <link rel="stylesheet" href="/assets/css/materialdesignicons.min.css" rel="stylesheet" type="text/css" />
+  <!-- <link rel="stylesheet" href="/assets/css/fullcalendar.css" /> -->
+  <link rel="stylesheet" href="/assets/css/main.css" />
+  <script src="/assets/js/Chart.min.js"></script>
+  <script src="/assets/js/config.js"></script>
+
+</head>
+
+<body>
+  <!-- ======== sidebar-nav start =========== -->
+  <aside class="sidebar-nav-wrapper">
+    <div class="navbar-logo">
+      <a href="/admin-frontend/admin_dashboard.html">
+
+        <img src="/assets/images/logo/ASnT5o01.svg" alt="PetHostelFlow" />
+      </a>
+    </div>
+    <nav class="sidebar-nav">
+      <ul>
+        <li class="nav-item">
+          <a href="/admin-frontend/admin_dashboard.html">
+
+            <span class="icon">
+              <i class="lni lni-dashboard"></i>
+            </span>
+            <span class="text">Dashboard</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/admin-frontend/manage_bookings.html">
+            <span class="icon">
+              <i class="lni lni-calendar"></i>
+            </span>
+            <span class="text">Bookings</span>
+          </a>
+        </li>
+
+        <li class="nav-item active">
+          <a href="/admin-frontend/iot-dashboard.html">
+            <span class="icon"><i class="lni lni-stats-up"></i></span>
+            <span class="text">IoT Live Stats</span>
+          </a>
+        </li>
+
+        <li class="nav-item active">
+          <a href="/admin-frontend/mqtt-test.html">
+            <span class="icon"><i class="lni lni-stats-up"></i></span>
+            <span class="text">IoT Testing</span>
+          </a>
+        </li>
+
+      </ul>
+    </nav>
+  </aside>
+  <!-- ======== sidebar-nav end =========== -->
+
+
+  <div class="overlay"></div>
+  <!-- ======== sidebar-nav end =========== -->
+
+  <!-- ======== main-wrapper start =========== -->
+  <main class="main-wrapper">
+    <!-- ========== header start ========== -->
+    <header class="header">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-lg-5 col-md-5 col-6">
+            <div class="header-left d-flex align-items-center">
+              <div class="menu-toggle-btn mr-15">
+                <button id="menu-toggle" class="main-btn primary-btn btn-hover">
+                  <i class="lni lni-chevron-left me-2"></i> Menu
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-7 col-md-7 col-6">
+            <div class="header-right">
+
+              <div class="profile-box ms-3 position-relative">
+                <button class="dropdown-toggle bg-transparent border-0 d-flex align-items-center gap-2" type="button"
+                  id="profile" data-bs-toggle="dropdown" aria-expanded="false">
+                  <img src="/assets/images/profile/profile-image.png" alt="Profile" class="rounded-circle" width="40"
+                    height="40">
+                  <div class="d-none d-md-block text-start">
+                    <h6 class="fw-semibold mb-0 text-sm" id="adminEmail">
+                      <span class="spinner-border spinner-border-sm" role="status"></span> Loading...
+                    </h6>
+                    <p class="mb-0 text-xs text-muted">Admin</p>
+                  </div>
+                </button>
+
+                <ul class="dropdown-menu dropdown-menu-end shadow-lg p-2" aria-labelledby="profile"
+                  style="min-width: 240px;">
+                  <li>
+                    <div class="d-flex align-items-center px-3 py-2">
+                      <img src="/assets/images/profile/profile-image.png" alt="Profile" class="rounded-circle"
+                        width="40" height="40">
+                      <div class="ms-3">
+                        <h6 class="mb-0 text-sm fw-semibold">Admin</h6>
+                        <a id="adminEmailDropdown" href="#" class="text-xs text-muted">Loading...</a>
+                      </div>
+                    </div>
+                  </li>
+                  <li>
+                    <hr class="dropdown-divider">
+                  </li>
+                  <li>
+                    <a href="javascript:void(0);" id="signOutBtn" class="dropdown-item text-danger">
+                      <i class="lni lni-exit me-2"></i> Sign Out
+                    </a>
+                  </li>
+                </ul>
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <!-- ========== header end ========== -->
+
+    <!-- ========== dashboard section start ========== -->
+    <section class="section">
+      <div class="container-fluid">
+        <!-- Page Title + Breadcrumb -->
+        <div class="d-flex flex-wrap justify-content-between align-items-center mt-4 mb-3">
+          <h2 class="fw-bold mb-2">PetStay Dashboard</h2>
+          <div class="d-flex flex-wrap gap-2 align-items-center">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                <li class="breadcrumb-item active" aria-current="page">PetStay</li>
+              </ol>
+            </nav>
+            <button id="refreshBtn" class="btn btn-outline-primary btn-sm">
+              <i class="lni lni-reload me-1"></i> Refresh
+            </button>
+          </div>
+        </div>
+
+        <!-- Stat Cards -->
+        <div class="row g-4 mt-3">
+          <!-- Current Guests -->
+          <div class="col-md-6 col-xl-3">
+            <div class="icon-card h-100">
+              <div class="icon purple"><i class="mdi mdi-paw"></i></div>
+              <div class="content">
+                <h6 class="mb-10">Current Guests</h6>
+                <h3 class="text-bold mb-10" id="currentGuests">Loading...</h3>
+              </div>
+            </div>
+          </div>
+
+          <!-- Booking Today -->
+          <div class="col-md-6 col-xl-3">
+            <div class="icon-card h-100">
+              <div class="icon success"><i class="mdi mdi-calendar-check"></i></div>
+              <div class="content">
+                <h6 class="mb-10">Booking Today</h6>
+                <h3 class="text-bold mb-10" id="bookingsToday">Loading...</h3>
+              </div>
+            </div>
+          </div>
+
+          <!-- Available Rooms -->
+          <div class="col-md-6 col-xl-3">
+            <div class="icon-card h-100">
+              <div class="icon primary"><i class="mdi mdi-door-open"></i></div>
+              <div class="content">
+                <h6 class="mb-10">Available Rooms</h6>
+                <div id="availableRooms">
+                  <p class="text-sm mb-1 text-success"><strong>Dog:</strong> <span id="dogRooms">—</span></p>
+                  <p class="text-sm text-danger"><strong>Cat:</strong> <span id="catRooms">—</span></p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Total Bookings -->
+          <div class="col-md-6 col-xl-3">
+            <div class="icon-card h-100">
+              <div class="icon orange"><i class="mdi mdi-book-open-page-variant"></i></div>
+              <div class="content">
+                <h6 class="mb-10">Total Bookings</h6>
+                <h3 class="text-bold mb-10" id="newBookingsCount">Loading...</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Charts Section -->
+        <div class="row mt-4">
+          <div class="col-lg-6">
+            <div class="card-style mb-30">
+              <div class="title d-flex flex-wrap align-items-center justify-content-between">
+                <div class="left">
+                  <h6 class="text-medium mb-2">Booking Status</h6>
+                </div>
+                <div class="right">
+                  <div class="select-style-1 mb-2">
+                    <div class="select-position select-sm">
+                      <select class="bg-ligh">
+                        <option value="">Last 6 Months</option>
+                        <option value="">Last 3 Months</option>
+                        <option value="">Last Year</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="chart">
+                <canvas id="BookingStatusPieChart" style="width: 100%; height: 400px;"></canvas>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="card-style mb-30">
+              <div class="title d-flex flex-wrap align-items-center justify-content-between">
+                <div class="left">
+                  <h6 class="text-medium mb-2">Pet Species Stats</h6>
+                </div>
+                <div class="right">
+                  <div class="select-style-1 mb-2">
+                    <div class="select-position select-sm">
+                      <select class="bg-ligh">
+                        <option value="">Last 6 Months</option>
+                        <option value="">Last 3 Months</option>
+                        <option value="">Last Year</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="chart">
+                <div id="legend4" class="mb-20">
+                  <ul class="legend3 d-flex flex-wrap gap-3 align-items-center">
+                    <li>
+                      <div class="d-flex">
+                        <span class="bg-color primary-bg"> </span>
+                        <div class="text">
+                          <p class="text-sm text-success"><span class="text-dark">Dogs</span></p>
+                          <h2 id="dogCount">—</h2>
+                        </div>
+                      </div>
+                    </li>
+                    <li>
+                      <div class="d-flex">
+                        <span class="bg-color danger-bg"></span>
+                        <div class="text">
+                          <p class="text-sm text-danger"><span class="text-dark">Cats</span></p>
+                          <h2 id="catCount">—</h2>
+                        </div>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+                <canvas id="PetSpeciesChart" style="width: 100%; height: 400px;"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Current Guests Table -->
+        <div class="row mt-4">
+          <div class="col-lg-12">
+            <div class="card-style mb-30">
+              <div class="title d-flex justify-content-between align-items-center mb-3">
+                <h6 class="text-medium">Current Guests</h6>
+                <div class="select-style-1">
+                  <div class="select-position select-sm">
+                    <select class="light-bg">
+                      <option value="Today">Today</option>
+                      <option value="Weekly">Weekly</option>
+                      <option value="Monthly">Monthly</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="table-responsive">
+                <table class="table top-selling-table">
+                  <thead>
+                    <tr>
+                      <th>Pet Photo</th>
+                      <th>Pet Name</th>
+                      <th>QR Code</th>
+                      <th>Owner</th>
+                      <th>Room No.</th>
+                      <th>Date In</th>
+                      <th>Days Left</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody id="currentGuestsTable">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+    <footer class="footer">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-md-6 order-last order-md-first">
+            <div class="copyright text-center text-md-start">
+              <p class="text-sm">Designed and Developed by AWSome Squad - FRONTEND TEAM</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+  </main>
+
+  <!-- QR Modal -->
+  <div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-sm modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="qrModalLabel">QR Code</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body text-center">
+          <img id="qrModalImage" src="" alt="QR Code" class="img-fluid" style="max-width: 100%;" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======== main-wrapper end =========== -->
+  <!-- ========= All Javascript files linkup ======== -->
+  <script defer src="/assets/js/bootstrap.bundle.min.js"></script>
+  <script defer src="/assets/js/moment.min.js"></script>
+  <script defer src="/assets/js/jvectormap.min.js"></script>
+  <script defer src="/assets/js/main.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/aws-amplify@latest/dist/aws-amplify.min.js"></script>
+  <script defer src="/assets/js/auth-check.js"></script>
+
+  <script>
+    /**
+     * Load all booking data and show stats + table.
+     * Shows QR code images using pre-signed S3 URLs for security.
+     */
+    async function loadDashboardData(filter = "Today") {
+      try {
+        // Fetch all bookings from your global config API URL
+        const res = await fetch(window.PETSTAY_CONFIG.BOOKINGS_API_URL);
+        const result = await res.json();
+        const bookings = result.bookings;
+
+        //Get today's date in YYYY-MM-DD format.
+        const today = new Date();
+        let todayISO = today.toISOString().split("T")[0];
+
+        // Filter bookings by time range
+        let filteredBookings = bookings;
+        if (filter === "Today") {
+          filteredBookings = bookings.filter(b => b.CheckInDate === todayISO);
+        } else if (filter === "Weekly") {
+          const weekAgo = new Date();
+          weekAgo.setDate(today.getDate() - 7);
+          filteredBookings = bookings.filter(b => new Date(b.CheckInDate) >= weekAgo);
+        } else if (filter === "Monthly") {
+          const monthAgo = new Date();
+          monthAgo.setDate(today.getDate() - 30);
+          filteredBookings = bookings.filter(b => new Date(b.CheckInDate) >= monthAgo);
+        }
+
+        // Count Checked-In bookings
+        const checkedIn = bookings.filter(b => b.Status === "Checked-In");
+
+        // Update dashboard stats
+        document.getElementById("currentGuests").innerText = checkedIn.length;
+        document.getElementById("bookingsToday").innerText = filteredBookings.length;
+        document.getElementById("newBookingsCount").innerText = bookings.length;
+
+        // Clear previous table
+        const guestTable = document.getElementById("currentGuestsTable");
+        guestTable.innerHTML = "";
+
+        // Counters for charts
+        const petSpeciesCount = { Dog: 0, Cat: 0 };
+        const statusCount = { "Pending": 0, "Confirmed": 0, "Checked-In": 0, "Checked-Out": 0, "Cancelled": 0 };
+
+        bookings.forEach(b => {
+          const species = b.PetSpecies?.trim();
+          if (petSpeciesCount.hasOwnProperty(species)) petSpeciesCount[species]++;
+          if (statusCount.hasOwnProperty(b.Status)) statusCount[b.Status]++;
+
+          if (b.Status === "Checked-In") {
+            const daysLeft = Math.max(0, Math.ceil(
+              (new Date(b.CheckOutDate) - new Date()) / (1000 * 60 * 60 * 24)
+            ));
+
+            const petPhotoHTML = b.PetPhotoURL ? `
+    <img 
+      src="${b.PetPhotoURL}" 
+      alt="${b.PetName}" 
+      style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; border: 1px solid #ccc;"
+    />
+  ` : "";
+            guestTable.innerHTML += `
+<tr>
+  <td>
+    <img 
+      src="${b.PetPhotoURL}" 
+      alt="${b.PetName}" 
+      class="rounded" 
+      style="width: 50px; height: 50px; object-fit: cover; border: 1px solid #ccc;" 
+    />
+  </td>
+  <td>
+    <p class="text-sm fw-bold mb-0">${b.PetName}</p>
+    <p class="text-xs text-muted mb-0">(${b.PetBreed || b.PetSpecies})</p>
+  </td>
+  <td>
+    ${b.QRCodeURL ? `
+      <img 
+        src="${b.QRCodeURL}" 
+        alt="QR Code"
+        class="qr-thumbnail"
+        style="width: 90px; cursor: pointer; border: 1px solid #ccc; border-radius: 6px; padding: 4px; background: #fff;" 
+        onclick="showQRModal('${b.QRCodeURL}')"
+      />
+    ` : '<span class="text-muted text-sm">—</span>'}
+  </td>
+  <td><p class="text-sm">${b.OwnerName}</p></td>
+  <td><p class="text-sm">${b.RoomNumber || '—'}</p></td>
+  <td><p class="text-sm">${b.CheckInDate}</p></td>
+  <td><p class="text-sm">${daysLeft} day${daysLeft !== 1 ? 's' : ''}</p></td>
+  <td><span class="status-btn success-btn">Checked In</span></td>
+</tr>`;
+
+
+          }
+        });
+
+        loadCharts(petSpeciesCount, statusCount);
+
+      } catch (err) {
+        console.error("Error loading dashboard data:", err);
+      }
+    }
+
+    /**
+     * Load room availability for dogs & cats.
+     */
+    async function loadRoomAvailability() {
+      try {
+        // Use global config for availability API
+        const res = await fetch(window.PETSTAY_CONFIG.ROOMS_AVAILABILITY_API_URL);
+        const result = await res.json();
+        const stats = result.stats;
+
+        if (res.ok && Array.isArray(stats.rooms)) {
+          let totalDog = 0, availableDog = 0;
+          let totalCat = 0, availableCat = 0;
+
+          stats.rooms.forEach(r => {
+            if (r.petType === "Dog") {
+              totalDog++;
+              if (!r.isOccupied) availableDog++;
+            } else if (r.petType === "Cat") {
+              totalCat++;
+              if (!r.isOccupied) availableCat++;
+            }
+          });
+
+          document.getElementById("dogRooms").innerText = `${availableDog} / ${totalDog}`;
+          document.getElementById("catRooms").innerText = `${availableCat} / ${totalCat}`;
+
+          if (availableDog === 0 || availableCat === 0) {
+            const toast = new bootstrap.Toast(document.getElementById("availabilityToast"));
+            const msg = `${availableDog === 0 ? 'No dog rooms available. ' : ''}${availableCat === 0 ? 'No cat rooms available.' : ''}`;
+            document.getElementById("availabilityMessage").textContent = msg;
+            toast.show();
+          }
+        }
+      } catch (err) {
+        console.error("Room availability error:", err);
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      const shouldRefresh = urlParams.get("refresh") === "1";
+
+      document.getElementById("refreshBtn")?.addEventListener("click", () => {
+        loadDashboardData();
+        loadRoomAvailability();
+      });
+
+      loadDashboardData();
+      loadRoomAvailability();
+
+      document.querySelector("select.light-bg")?.addEventListener("change", (e) => {
+        loadDashboardData(e.target.value);
+      });
+
+      if (shouldRefresh) {
+        console.log("Auto-refresh triggered after check-in");
+        setTimeout(() => location.href = '/admin-frontend/admin_dashboard.html', 500);
+      }
+    });
+
+    function loadCharts(petSpeciesCount, statusCount) {
+      const ctxSpecies = document.getElementById("PetSpeciesChart")?.getContext("2d");
+      if (ctxSpecies) {
+        new Chart(ctxSpecies, {
+          type: "bar",
+          data: {
+            labels: ["Dogs", "Cats"],
+            datasets: [{
+              label: "Pets",
+              data: [petSpeciesCount.Dog, petSpeciesCount.Cat],
+              backgroundColor: ["#365CF5", "#d50100"],
+              borderRadius: 10
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              tooltip: {
+                backgroundColor: "#F3F6F8",
+                titleColor: "#8F92A1",
+                bodyColor: "#171717",
+                bodyFont: { weight: "bold", size: 16 },
+                displayColors: false
+              },
+              legend: { display: false }
+            }
+          }
+        });
+      }
+
+      const ctxBookingStatus = document.getElementById("BookingStatusPieChart")?.getContext("2d");
+      if (ctxBookingStatus) {
+        new Chart(ctxBookingStatus, {
+          type: "pie",
+          data: {
+            labels: Object.keys(statusCount),
+            datasets: [{
+              data: Object.values(statusCount),
+              backgroundColor: [
+                "#FFC107",  // Pending
+                "#28A745",  // Confirmed
+                "#007BFF",  // Checked-In
+                "#6C757D",  // Checked-Out
+                "#DC3545"   // Cancelled
+              ],
+              borderWidth: 2
+            }]
+          },
+          options: {
+            responsive: true,
+            plugins: {
+              legend: {
+                position: "bottom",
+                labels: { boxWidth: 20, padding: 20 }
+              },
+              tooltip: {
+                backgroundColor: "#F3F6F8",
+                bodyColor: "#171717",
+                titleColor: "#8F92A1",
+                bodyFont: { size: 14 },
+                displayColors: true
+              }
+            }
+          }
+        });
+      }
+    }
+
+    function showQRModal(url) {
+      const modalImg = document.getElementById("qrModalImage");
+      modalImg.src = url;
+      const qrModal = new bootstrap.Modal(document.getElementById("qrModal"));
+      qrModal.show();
+    }
+
+  </script>
+
+
+</body>
+
+</html>

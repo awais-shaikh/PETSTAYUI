@@ -1,0 +1,63 @@
+/* checkin.css - Styling for PetStay Check-In */
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f9f9fb;
+  color: #333;
+}
+
+.container {
+  max-width: 600px;
+  padding: 30px 20px;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+  margin-top: 60px;
+}
+
+h2 {
+  font-weight: 700;
+  color: #5c4084;
+}
+
+.alert-info {
+  font-size: 1rem;
+  padding: 20px;
+}
+
+.btn-success {
+  background-color: #28a745;
+  border: none;
+  font-weight: 600;
+}
+
+.btn-success:hover {
+  background-color: #218838;
+}
+
+.badge {
+  font-size: 0.95rem;
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.badge-warning {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.badge-success {
+  background-color: #28a745;
+}
+
+.text-success {
+  font-weight: 600;
+}
+
+.text-danger {
+  font-weight: 600;
+}
+
+button {
+  transition: all 0.3s ease;
+}

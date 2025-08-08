@@ -1,0 +1,239 @@
+/* ------------------------
+   Common Styles (Both Pages)
+------------------------ */
+body {
+  background-color: #f9fafb;
+  font-family: 'Inter', sans-serif;
+  color: #333;
+}
+
+.main-wrapper {
+  padding-left: 0 !important;
+  margin: 0 auto;
+}
+
+/* Title Section */
+.title-wrapper h2 {
+  font-weight: 700;
+  font-size: 2rem;
+  color: #2b2b2b;
+}
+
+.title-wrapper p {
+  color: #6c757d;
+  font-size: 1rem;
+}
+
+/* Buttons */
+.main-btn {
+  border-radius: 10px;
+  padding: 12px 24px;
+  font-weight: 600;
+  font-size: 1rem;
+  transition: all 0.2s ease-in-out;
+}
+
+.main-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Headings in Forms */
+h5 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #212121;
+  margin-top: 2.5rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Inputs & Selects */
+.input-style-1 input,
+.input-style-1 textarea,
+.select-style-1 select {
+  border: 1px solid #dcdcdc;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-size: 1rem;
+  width: 100%;
+  background-color: #fff;
+}
+
+.input-style-1 label,
+.select-style-1 label {
+  font-weight: 600;
+  color: #333333;
+  margin-bottom: 0.5rem;
+  display: inline-block;
+  font-size: 0.95rem;
+}
+
+/* Select styling improvements */
+.select-style-1 .select-position select,
+.select-style-1 select {
+  height: 44px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 1rem;
+  width: 100%;
+  background-color: #fff;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg fill='none' stroke='%23666' stroke-width='2' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1rem;
+}
+
+/* Input focus improvement */
+.input-style-1 input:focus,
+.select-style-1 select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+  outline: none;
+  transition: 0.2s ease-in-out;
+}
+
+/* Spacing Fixes */
+.input-style-1,
+.select-style-1 {
+  margin-bottom: 1.25rem;
+}
+
+/* Responsive tweaks */
+@media (max-width: 767px) {
+  .input-style-1 input,
+  .input-style-1 textarea,
+  .select-style-1 select {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .row.g-3 > .col-md-4,
+  .row.g-3 > .col-md-6 {
+    width: 100% !important;
+  }
+
+  .main-btn {
+    width: 100%;
+    padding: 12px;
+  }
+
+  h5 {
+    font-size: 1rem;
+  }
+
+  .input-style-1 label,
+  .select-style-1 label {
+    font-size: 0.85rem;
+  }
+}
+
+/* ------------------------
+   Booking Form Page Styles
+------------------------ */
+.booking-wrapper .main-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  min-height: 100vh;
+  padding: 40px 20px;
+}
+
+.booking-wrapper .container {
+  max-width: 900px;
+  width: 100%;
+}
+
+.booking-wrapper .card-style {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  padding: 40px;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+}
+
+/* Grid Alignment */
+.row.g-3 > .col-md-4 {
+  flex: 0 0 auto;
+  width: 33.333333%;
+}
+
+.row.g-3 > .col-md-6 {
+  flex: 0 0 auto;
+  width: 50%;
+}
+
+/* Sticky Submit Button (optional usage) */
+.sticky-book-btn {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+  border-top: 1px solid #e5e7eb;
+  z-index: 10;
+}
+
+/* ------------------------
+   Booking Success QR Page
+------------------------ */
+.confirmation-wrapper .main-wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  min-height: 100vh;
+  padding-top: 80px;
+}
+
+.confirmation-wrapper .card-style {
+  background: #fff;
+  padding: 30px 20px;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+  max-width: 400px;
+  width: 100%;
+}
+
+.qr-code-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.qr-code-wrapper img {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+}
+
+/* Button Styles */
+.btn-primary {
+  background-color: #4f46e5;
+  border: none;
+  padding: 12px;
+  font-weight: 600;
+  border-radius: 10px;
+  color: #fff;
+}
+
+.btn-primary:hover {
+  background-color: #4338ca;
+}
+
+.btn-secondary {
+  background-color: #64748b;
+  border: none;
+  padding: 12px 20px;
+  font-weight: 600;
+  border-radius: 10px;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background-color: #475569;
+}

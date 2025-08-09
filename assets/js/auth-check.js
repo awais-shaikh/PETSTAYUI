@@ -18,8 +18,8 @@ const amplifyAuthConfig = {
   oauth: {
     domain: 'us-east-2obgxzziq8.auth.us-east-2.amazoncognito.com', //write your Cognito Domain here
     scope: ['email', 'openid', 'phone'], // OAuth scopes
-    redirectSignIn: 'https://main.d2qk7y64cxtqr2.amplifyapp.com/admin-frontend/post-login.html', //write your Redirect Sign In URL here
-    redirectSignOut: 'https://main.d2qk7y64cxtqr2.amplifyapp.com/index.html', //write your Redirect Sign Out URL here
+    redirectSignIn: 'https://main.d3se10ik2qynbc.amplifyapp.com/admin-frontend/post-login.html', //write your Redirect Sign In URL here
+    redirectSignOut: 'https://main.d3se10ik2qynbc.amplifyapp.com/index.html', //write your Redirect Sign Out URL here
     responseType: 'code', // OAuth flow to use (code for authorization code grant)
   }
 };
